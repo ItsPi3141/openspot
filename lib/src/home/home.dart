@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:openspot/services/spotify.dart';
+import 'package:openspot/src/common/playlist.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final SpotifyProvider spotifyProvider;
+  const HomePage({super.key, required this.spotifyProvider});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -57,170 +59,169 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        body: ChangeNotifierProvider(
-          create: (context) => SpotifyProvider(),
-          builder: (context, child) {
-            var spotifyProvider = Provider.of<SpotifyProvider>(context);
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16.0, 88.0, 16.0, 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      spotifyProvider.homeFeedData["data"]?["home"]["greeting"]["text"] ?? "",
-                      textAlign: TextAlign.left,
-                      style: theme.textTheme.headlineSmall,
-                    ),
-                    ...((spotifyProvider.homeFeedData["data"]?["home"]["sectionContainer"]["sections"]["items"] ?? []) as List).map(
-                      (section) {
-                        var sectionType = section["sectionItems"]["items"]?[0]["content"]["__typename"] ?? "";
-                        if (section["data"]["__typename"] == "HomeGenericSectionData" &&
-                            (sectionType == "ArtistResponseWrapper" || sectionType == "PlaylistResponseWrapper")) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 88.0, 16.0, 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  widget.spotifyProvider.homeFeedData["data"]?["home"]["greeting"]["text"] ?? "",
+                  textAlign: TextAlign.left,
+                  style: theme.textTheme.headlineSmall,
+                ),
+                ...((widget.spotifyProvider.homeFeedData["data"]?["home"]["sectionContainer"]["sections"]["items"] ?? []) as List).map(
+                  (section) {
+                    var sectionType = section["sectionItems"]["items"]?[0]["content"]["__typename"] ?? "";
+                    if (section["data"]["__typename"] == "HomeGenericSectionData" &&
+                        (sectionType == "ArtistResponseWrapper" || sectionType == "PlaylistResponseWrapper")) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Stack(
                             children: [
-                              Stack(
+                              Column(
                                 children: [
-                                  Column(
-                                    children: [
-                                      const SizedBox(
-                                        height: 32,
-                                      ),
-                                      Text(
-                                        section["data"]["title"]["text"] ?? "",
-                                        style: theme.textTheme.titleLarge,
-                                      ),
-                                    ],
+                                  const SizedBox(
+                                    height: 32,
                                   ),
-                                  GridView.count(
-                                    mainAxisSpacing: 4,
-                                    crossAxisSpacing: 4,
-                                    childAspectRatio: 3 / 4,
-                                    shrinkWrap: true,
-                                    primary: false,
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    crossAxisCount: 2,
-                                    children: [
-                                      ...(section["sectionItems"]["items"] as List).map(
-                                        (item) {
-                                          var card = item["content"]["data"];
-                                          if (item["content"]["__typename"] == "ArtistResponseWrapper") {
-                                            var profilePicture = (card["visuals"]["avatarImage"]["sources"] as List).firstWhere(
-                                                    (image) => image["width"] == 320,
-                                                    orElse: () => card["visuals"]["avatarImage"]["sources"][0])?["url"] ??
-                                                "";
-                                            return Card(
-                                              clipBehavior: Clip.antiAlias,
-                                              child: InkWell(
-                                                onTap: () {},
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(8.0),
-                                                  child: Column(
-                                                    children: [
-                                                      ClipRRect(
-                                                        borderRadius: BorderRadius.circular(8.0),
-                                                        child: AspectRatio(
-                                                          aspectRatio: 1,
-                                                          child: CachedNetworkImage(
-                                                            imageUrl: profilePicture,
-                                                            fit: BoxFit.cover,
-                                                            errorWidget: (context, url, error) => const Icon(Icons.error_outline_rounded),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                        children: [
-                                                          Text((card["profile"]["name"] ?? "").replaceAll(RegExp(r"</?.+?>"), ""),
-                                                              style: theme.textTheme.titleMedium, maxLines: 2, overflow: TextOverflow.ellipsis),
-                                                          Text(
-                                                            "Artist",
-                                                            style: theme.textTheme.bodySmall,
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                          if (item["content"]["__typename"] == "PlaylistResponseWrapper") {
-                                            var profilePicture = card["images"]["items"][0]["sources"][0]["url"] ?? "";
-                                            return Card(
-                                              clipBehavior: Clip.antiAlias,
-                                              child: InkWell(
-                                                onTap: () {},
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(8.0),
-                                                  child: Column(
-                                                    children: [
-                                                      ClipRRect(
-                                                        borderRadius: BorderRadius.circular(8.0),
-                                                        child: AspectRatio(
-                                                          aspectRatio: 1,
-                                                          child: CachedNetworkImage(
-                                                            imageUrl: profilePicture,
-                                                            fit: BoxFit.cover,
-                                                            errorWidget: (context, url, error) => const Icon(Icons.error_outline_rounded),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                        children: [
-                                                          Text((card["name"] ?? "").replaceAll(RegExp(r"</?.+?>"), ""),
-                                                              style: TextStyle(
-                                                                fontSize: theme.textTheme.titleMedium?.fontSize,
-                                                                fontWeight: theme.textTheme.titleMedium?.fontWeight,
-                                                                height: 1,
-                                                              ),
-                                                              maxLines: 1,
-                                                              overflow: TextOverflow.ellipsis),
-                                                          Text(
-                                                            (card["description"] ?? "").replaceAll(RegExp(r"</?.+?>"), ""),
-                                                            style: TextStyle(
-                                                              fontSize: theme.textTheme.bodySmall?.fontSize,
-                                                              fontWeight: theme.textTheme.bodySmall?.fontWeight,
-                                                              height: 1.25,
-                                                            ),
-                                                            maxLines: 2,
-                                                            overflow: TextOverflow.ellipsis,
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                          return Container();
-                                        },
-                                      )
-                                    ],
+                                  Text(
+                                    section["data"]["title"]["text"] ?? "",
+                                    style: theme.textTheme.titleLarge,
                                   ),
                                 ],
                               ),
+                              GridView.count(
+                                mainAxisSpacing: 4,
+                                crossAxisSpacing: 4,
+                                childAspectRatio: 3 / 4,
+                                shrinkWrap: true,
+                                primary: false,
+                                physics: const NeverScrollableScrollPhysics(),
+                                crossAxisCount: 2,
+                                children: [
+                                  ...(section["sectionItems"]["items"] as List).map(
+                                    (item) {
+                                      var card = item["content"]["data"];
+                                      if (item["content"]["__typename"] == "ArtistResponseWrapper") {
+                                        var profilePicture = (card["visuals"]["avatarImage"]["sources"] as List).firstWhere((image) => image["width"] == 320,
+                                                orElse: () => card["visuals"]["avatarImage"]["sources"][0])?["url"] ??
+                                            "";
+                                        return Card(
+                                          clipBehavior: Clip.antiAlias,
+                                          child: InkWell(
+                                            onTap: () {},
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                children: [
+                                                  ClipRRect(
+                                                    borderRadius: BorderRadius.circular(8.0),
+                                                    child: AspectRatio(
+                                                      aspectRatio: 1,
+                                                      child: CachedNetworkImage(
+                                                        imageUrl: profilePicture,
+                                                        fit: BoxFit.cover,
+                                                        errorWidget: (context, url, error) => const Icon(Icons.error_outline_rounded),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                    children: [
+                                                      Text((card["profile"]["name"] ?? "").replaceAll(RegExp(r"</?.+?>"), ""),
+                                                          style: theme.textTheme.titleMedium, maxLines: 2, overflow: TextOverflow.ellipsis),
+                                                      Text(
+                                                        "Artist",
+                                                        style: theme.textTheme.bodySmall,
+                                                      )
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      if (item["content"]["__typename"] == "PlaylistResponseWrapper") {
+                                        var profilePicture = card["images"]["items"][0]["sources"][0]["url"] ?? "";
+                                        return Card(
+                                          clipBehavior: Clip.antiAlias,
+                                          child: InkWell(
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) => PlaylistViewer(uri: card["uri"], spotifyProvider: widget.spotifyProvider),
+                                                ),
+                                              );
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                children: [
+                                                  ClipRRect(
+                                                    borderRadius: BorderRadius.circular(8.0),
+                                                    child: AspectRatio(
+                                                      aspectRatio: 1,
+                                                      child: CachedNetworkImage(
+                                                        imageUrl: profilePicture,
+                                                        fit: BoxFit.cover,
+                                                        errorWidget: (context, url, error) => const Icon(Icons.error_outline_rounded),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                    children: [
+                                                      Text((card["name"] ?? "").replaceAll(RegExp(r"</?.+?>"), ""),
+                                                          style: TextStyle(
+                                                            fontSize: theme.textTheme.titleMedium?.fontSize,
+                                                            fontWeight: theme.textTheme.titleMedium?.fontWeight,
+                                                            height: 1,
+                                                          ),
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis),
+                                                      Text(
+                                                        (card["description"] ?? "").replaceAll(RegExp(r"</?.+?>"), ""),
+                                                        style: TextStyle(
+                                                          fontSize: theme.textTheme.bodySmall?.fontSize,
+                                                          fontWeight: theme.textTheme.bodySmall?.fontWeight,
+                                                          height: 1.25,
+                                                        ),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow.ellipsis,
+                                                      )
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      return Container();
+                                    },
+                                  )
+                                ],
+                              ),
                             ],
-                          );
-                        } else {
-                          return Container();
-                        }
-                      },
-                    )
-                  ],
-                ),
-              ),
-            );
-          },
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                )
+              ],
+            ),
+          ),
         ),
       ),
     );
