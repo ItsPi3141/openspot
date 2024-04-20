@@ -18,10 +18,10 @@ class SpotifyProvider extends ChangeNotifier {
   dynamic homeFeedData;
 
   SpotifyProvider() {
-    init();
+    reload();
   }
 
-  void init() async {
+  void reload() async {
     await getTokens();
     await getHomeFeed();
     notifyListeners();
