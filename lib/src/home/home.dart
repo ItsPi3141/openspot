@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:openspot/services/spotify.dart';
 import 'package:provider/provider.dart';
 
@@ -13,11 +11,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -38,19 +31,16 @@ class _HomePageState extends State<HomePage> {
                 child: SearchAnchor(
                   builder: (BuildContext context, SearchController controller) {
                     return const SearchBar(
-                      padding: MaterialStatePropertyAll<EdgeInsets>(
-                          EdgeInsets.symmetric(horizontal: 16.0)),
+                      padding: MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
                       elevation: MaterialStatePropertyAll<double>(
                         3.0,
                       ),
-                      shadowColor:
-                          MaterialStatePropertyAll<Color>(Colors.transparent),
+                      shadowColor: MaterialStatePropertyAll<Color>(Colors.transparent),
                       leading: Icon(Icons.search),
                       hintText: "Search for a song...",
                     );
                   },
-                  suggestionsBuilder:
-                      (BuildContext context, SearchController controller) {
+                  suggestionsBuilder: (BuildContext context, SearchController controller) {
                     return List<ListTile>.generate(
                       5,
                       (int index) {
@@ -78,24 +68,15 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      spotifyProvider.homeFeedData?["data"]["home"]["greeting"]
-                              ["text"] ??
-                          "",
+                      spotifyProvider.homeFeedData["data"]?["home"]["greeting"]["text"] ?? "",
                       textAlign: TextAlign.left,
                       style: theme.textTheme.headlineSmall,
                     ),
-                    ...((spotifyProvider.homeFeedData?["data"]["home"]
-                                ["sectionContainer"]["sections"]["items"] ??
-                            []) as List)
-                        .map(
+                    ...((spotifyProvider.homeFeedData["data"]?["home"]["sectionContainer"]["sections"]["items"] ?? []) as List).map(
                       (section) {
-                        var sectionType = section["sectionItems"]["items"]?[0]
-                                ["content"]["__typename"] ??
-                            "";
-                        if (section["data"]["__typename"] ==
-                                "HomeGenericSectionData" &&
-                            (sectionType == "ArtistResponseWrapper" ||
-                                sectionType == "PlaylistResponseWrapper")) {
+                        var sectionType = section["sectionItems"]["items"]?[0]["content"]["__typename"] ?? "";
+                        if (section["data"]["__typename"] == "HomeGenericSectionData" &&
+                            (sectionType == "ArtistResponseWrapper" || sectionType == "PlaylistResponseWrapper")) {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
@@ -118,55 +99,33 @@ class _HomePageState extends State<HomePage> {
                                     childAspectRatio: 3 / 4,
                                     shrinkWrap: true,
                                     primary: false,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
+                                    physics: const NeverScrollableScrollPhysics(),
                                     crossAxisCount: 2,
                                     children: [
-                                      ...(section["sectionItems"]["items"]
-                                              as List)
-                                          .map(
+                                      ...(section["sectionItems"]["items"] as List).map(
                                         (item) {
                                           var card = item["content"]["data"];
-                                          if (item["content"]["__typename"] ==
-                                              "ArtistResponseWrapper") {
-                                            var profilePicture = (card["visuals"]
-                                                            ["avatarImage"]
-                                                        ["sources"] as List)
-                                                    .firstWhere(
-                                                        (image) =>
-                                                            image["width"] ==
-                                                            320,
-                                                        orElse: () => card[
-                                                                        "visuals"]
-                                                                    ["avatarImage"]
-                                                                ["sources"]
-                                                            [0])?["url"] ??
+                                          if (item["content"]["__typename"] == "ArtistResponseWrapper") {
+                                            var profilePicture = (card["visuals"]["avatarImage"]["sources"] as List).firstWhere(
+                                                    (image) => image["width"] == 320,
+                                                    orElse: () => card["visuals"]["avatarImage"]["sources"][0])?["url"] ??
                                                 "";
                                             return Card(
                                               clipBehavior: Clip.antiAlias,
                                               child: InkWell(
                                                 onTap: () {},
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
+                                                  padding: const EdgeInsets.all(8.0),
                                                   child: Column(
                                                     children: [
                                                       ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
+                                                        borderRadius: BorderRadius.circular(8.0),
                                                         child: AspectRatio(
                                                           aspectRatio: 1,
-                                                          child:
-                                                              CachedNetworkImage(
-                                                            imageUrl:
-                                                                profilePicture,
+                                                          child: CachedNetworkImage(
+                                                            imageUrl: profilePicture,
                                                             fit: BoxFit.cover,
-                                                            errorWidget: (context,
-                                                                    url,
-                                                                    error) =>
-                                                                const Icon(Icons
-                                                                    .error_outline_rounded),
+                                                            errorWidget: (context, url, error) => const Icon(Icons.error_outline_rounded),
                                                           ),
                                                         ),
                                                       ),
@@ -174,30 +133,13 @@ class _HomePageState extends State<HomePage> {
                                                         height: 10,
                                                       ),
                                                       Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .stretch,
+                                                        crossAxisAlignment: CrossAxisAlignment.stretch,
                                                         children: [
-                                                          Text(
-                                                              (card["profile"][
-                                                                          "name"] ??
-                                                                      "")
-                                                                  .replaceAll(
-                                                                      RegExp(
-                                                                          r"</?.+?>"),
-                                                                      ""),
-                                                              style: theme
-                                                                  .textTheme
-                                                                  .titleMedium,
-                                                              maxLines: 2,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis),
+                                                          Text((card["profile"]["name"] ?? "").replaceAll(RegExp(r"</?.+?>"), ""),
+                                                              style: theme.textTheme.titleMedium, maxLines: 2, overflow: TextOverflow.ellipsis),
                                                           Text(
                                                             "Artist",
-                                                            style: theme
-                                                                .textTheme
-                                                                .bodySmall,
+                                                            style: theme.textTheme.bodySmall,
                                                           )
                                                         ],
                                                       ),
@@ -207,37 +149,24 @@ class _HomePageState extends State<HomePage> {
                                               ),
                                             );
                                           }
-                                          if (item["content"]["__typename"] ==
-                                              "PlaylistResponseWrapper") {
-                                            var profilePicture = card["images"]
-                                                        ["items"][0]["sources"]
-                                                    [0]["url"] ??
-                                                "";
+                                          if (item["content"]["__typename"] == "PlaylistResponseWrapper") {
+                                            var profilePicture = card["images"]["items"][0]["sources"][0]["url"] ?? "";
                                             return Card(
                                               clipBehavior: Clip.antiAlias,
                                               child: InkWell(
                                                 onTap: () {},
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
+                                                  padding: const EdgeInsets.all(8.0),
                                                   child: Column(
                                                     children: [
                                                       ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
+                                                        borderRadius: BorderRadius.circular(8.0),
                                                         child: AspectRatio(
                                                           aspectRatio: 1,
-                                                          child:
-                                                              CachedNetworkImage(
-                                                            imageUrl:
-                                                                profilePicture,
+                                                          child: CachedNetworkImage(
+                                                            imageUrl: profilePicture,
                                                             fit: BoxFit.cover,
-                                                            errorWidget: (context,
-                                                                    url,
-                                                                    error) =>
-                                                                const Icon(Icons
-                                                                    .error_outline_rounded),
+                                                            errorWidget: (context, url, error) => const Icon(Icons.error_outline_rounded),
                                                           ),
                                                         ),
                                                       ),
@@ -245,54 +174,25 @@ class _HomePageState extends State<HomePage> {
                                                         height: 10,
                                                       ),
                                                       Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .stretch,
+                                                        crossAxisAlignment: CrossAxisAlignment.stretch,
                                                         children: [
-                                                          Text(
-                                                              (card["name"] ??
-                                                                      "")
-                                                                  .replaceAll(
-                                                                      RegExp(
-                                                                          r"</?.+?>"),
-                                                                      ""),
+                                                          Text((card["name"] ?? "").replaceAll(RegExp(r"</?.+?>"), ""),
                                                               style: TextStyle(
-                                                                fontSize: theme
-                                                                    .textTheme
-                                                                    .titleMedium
-                                                                    ?.fontSize,
-                                                                fontWeight: theme
-                                                                    .textTheme
-                                                                    .titleMedium
-                                                                    ?.fontWeight,
+                                                                fontSize: theme.textTheme.titleMedium?.fontSize,
+                                                                fontWeight: theme.textTheme.titleMedium?.fontWeight,
                                                                 height: 1,
                                                               ),
                                                               maxLines: 1,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis),
+                                                              overflow: TextOverflow.ellipsis),
                                                           Text(
-                                                            (card["description"] ??
-                                                                    "")
-                                                                .replaceAll(
-                                                                    RegExp(
-                                                                        r"</?.+?>"),
-                                                                    ""),
+                                                            (card["description"] ?? "").replaceAll(RegExp(r"</?.+?>"), ""),
                                                             style: TextStyle(
-                                                              fontSize: theme
-                                                                  .textTheme
-                                                                  .bodySmall
-                                                                  ?.fontSize,
-                                                              fontWeight: theme
-                                                                  .textTheme
-                                                                  .bodySmall
-                                                                  ?.fontWeight,
+                                                              fontSize: theme.textTheme.bodySmall?.fontSize,
+                                                              fontWeight: theme.textTheme.bodySmall?.fontWeight,
                                                               height: 1.25,
                                                             ),
                                                             maxLines: 2,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
+                                                            overflow: TextOverflow.ellipsis,
                                                           )
                                                         ],
                                                       ),

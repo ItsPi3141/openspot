@@ -22,10 +22,8 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  static final _defaultLightColorScheme =
-      ColorScheme.fromSeed(seedColor: Colors.blue);
-  static final _defaultDarkColorScheme =
-      ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark);
+  static final _defaultLightColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
+  static final _defaultDarkColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark);
 
   @override
   Widget build(BuildContext context) {
@@ -40,15 +38,11 @@ class _AppState extends State<App> {
               title: "Openspot",
               theme: ThemeData(
                 useMaterial3: true,
-                colorScheme: themeProvider.useMaterialYou
-                    ? lightDynamic ?? _defaultLightColorScheme
-                    : _defaultLightColorScheme,
+                colorScheme: themeProvider.useMaterialYou ? lightDynamic ?? _defaultLightColorScheme : _defaultLightColorScheme,
               ),
               darkTheme: ThemeData(
                 useMaterial3: true,
-                colorScheme: themeProvider.useMaterialYou
-                    ? darkDynamic ?? _defaultDarkColorScheme
-                    : _defaultDarkColorScheme,
+                colorScheme: themeProvider.useMaterialYou ? darkDynamic ?? _defaultDarkColorScheme : _defaultDarkColorScheme,
                 brightness: Brightness.dark,
               ),
               themeMode: themeProvider.currentTheme,
@@ -76,12 +70,7 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
     return Scaffold(
       body: IndexedStack(
         index: selectedIndex,
-        children: const [
-          HomePage(),
-          DiscoverPage(),
-          LibraryPage(),
-          SettingsPage()
-        ],
+        children: const [HomePage(), DiscoverPage(), LibraryPage(), SettingsPage()],
       ),
       bottomNavigationBar: NavigationBar(
         destinations: const <NavigationDestination>[
