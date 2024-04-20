@@ -161,7 +161,7 @@ class SpotifyProvider extends ChangeNotifier {
       },
     );
     if (res.statusCode == 200) {
-      homeFeedData = jsonDecode(res.body);
+      homeFeedData = jsonDecode(utf8.decode(res.bodyBytes));
     }
   }
 }
