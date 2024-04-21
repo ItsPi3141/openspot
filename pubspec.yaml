@@ -11,6 +11,7 @@ environment:
 dependencies:
   cached_network_image: ^3.3.1
   dynamic_color: ^1.7.0
+  easy_load_more: ^1.1.0
   flutter:
     sdk: flutter
   flutter_timezone: ^1.0.8

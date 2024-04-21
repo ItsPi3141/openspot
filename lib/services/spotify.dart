@@ -200,7 +200,7 @@ class SpotifyProvider extends ChangeNotifier {
     return playlistData;
   }
 
-  void loadMorePlaylistItems(String uri, {int count = 100}) async {
+  Future<void> loadMorePlaylistItems(String uri, {int count = 100}) async {
     if (playlistCache[uri] == null) return;
     if (playlistCache[uri]["tracks"].length >= playlistCache[uri]["totalTracks"]) return;
 
@@ -236,5 +236,6 @@ class SpotifyProvider extends ChangeNotifier {
 
     var playlistRawData = jsonDecode(utf8.decode(res.bodyBytes));
     playlistCache[uri]["tracks"] = [...playlistCache[uri]["tracks"], ...playlistRawData["data"]["playlistV2"]["content"]["items"]];
+    return;
   }
 }
