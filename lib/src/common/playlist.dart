@@ -98,16 +98,50 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
               childCount: 1,
             ),
           ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [],
-                );
-              },
-              childCount: 1,
-            ),
+          SliverList.separated(
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                onTap: () {},
+                title: Text(playlistData["tracks"][index]?["itemV2"]?["data"]?["name"] ?? ""),
+                subtitle: Builder(
+                  builder: (BuildContext context) {
+                    var artistIndex = -1; // because ++ is run before the return
+                    return Row(
+                      children: (playlistData["tracks"][index]?["itemV2"]?["data"]?["artists"]?["items"] as List).map(
+                        (e) {
+                          artistIndex++;
+                          return Row(
+                            children: [
+                              if (artistIndex > 0) const Text(", "),
+                              Text(
+                                e["profile"]?["name"] ?? "",
+                              ),
+                            ],
+                          );
+                        },
+                      ).toList(),
+                    );
+                  },
+                ),
+                leading: Builder(builder: (context) {
+                  var imageUrl = (playlistData["tracks"]?[index]?["itemV2"]?["data"]?["albumOfTrack"]?["coverArt"]?["sources"] as List).firstWhere(
+                        (image) => image["width"] == 640,
+                      )?["url"] ??
+                      playlistData["tracks"]?[index]?["itemV2"]?["data"]?["albumOfTrack"]?["coverArt"]?["sources"]?[0]?["url"];
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: imageUrl != null ? CachedNetworkImage(imageUrl: imageUrl, height: 48, width: 48) : const SizedBox(),
+                  );
+                }),
+              );
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return const Divider(
+                height: 1,
+              );
+              // return const SizedBox();
+            },
+            itemCount: playlistData["tracks"]?.length ?? 0,
           ),
         ],
       ),

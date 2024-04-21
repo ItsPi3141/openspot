@@ -191,14 +191,50 @@ class SpotifyProvider extends ChangeNotifier {
         "name": playlistRawData["data"]["playlistV2"]["ownerV2"]["data"]["name"],
         "uri": playlistRawData["data"]["playlistV2"]["ownerV2"]["data"]["uri"],
         "profilePicture": playlistRawData["data"]["playlistV2"]["ownerV2"]["data"]["avatar"]["sources"][0]["url"]
-      }
+      },
+      "tracks": playlistRawData["data"]["playlistV2"]["content"]["items"],
+      "totalTracks": playlistRawData["data"]["playlistV2"]["content"]["totalCount"],
     };
     playlistCache[uri] = playlistData;
 
     return playlistData;
   }
 
-  Future<Map<String, dynamic>> fetchPlaylistItems(int count, int offset) async {
-    return {};
+  void loadMorePlaylistItems(String uri, {int count = 100}) async {
+    if (playlistCache[uri] == null) return;
+    if (playlistCache[uri]["tracks"].length >= playlistCache[uri]["totalTracks"]) return;
+
+    final queryVariables = Uri.encodeComponent(
+      jsonEncode(
+        {
+          "uri": uri,
+          "offset": playlistCache[uri]["tracks"].length,
+          "limit": 100,
+        },
+      ),
+    );
+    final queryExtensions = Uri.encodeComponent(
+      jsonEncode(
+        {
+          "persistedQuery": {
+            "version": 1,
+            "sha256Hash": playlistQueryHash,
+          }
+        },
+      ),
+    );
+    final res = await http.get(
+      Uri.parse(
+          "https://api-partner.spotify.com/pathfinder/v1/query?operationName=fetchPlaylistContents&variables=$queryVariables&extensions=$queryExtensions"),
+      headers: {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+        "authorization": "Bearer $bearerToken",
+      },
+    );
+
+    if (res.statusCode != 200) return;
+
+    var playlistRawData = jsonDecode(utf8.decode(res.bodyBytes));
+    playlistCache[uri]["tracks"] = [...playlistCache[uri]["tracks"], ...playlistRawData["data"]["playlistV2"]["content"]["items"]];
   }
 }
