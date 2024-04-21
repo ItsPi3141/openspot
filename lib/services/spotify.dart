@@ -200,9 +200,9 @@ class SpotifyProvider extends ChangeNotifier {
     return playlistData;
   }
 
-  Future<void> loadMorePlaylistItems(String uri, {int count = 100}) async {
-    if (playlistCache[uri] == null) return;
-    if (playlistCache[uri]["tracks"].length >= playlistCache[uri]["totalTracks"]) return;
+  Future<bool> loadMorePlaylistItems(String uri, {int count = 100}) async {
+    if (playlistCache[uri] == null) return false;
+    if (playlistCache[uri]["tracks"].length >= playlistCache[uri]["totalTracks"]) return true;
 
     final queryVariables = Uri.encodeComponent(
       jsonEncode(
@@ -232,10 +232,10 @@ class SpotifyProvider extends ChangeNotifier {
       },
     );
 
-    if (res.statusCode != 200) return;
+    if (res.statusCode != 200) return false;
 
     var playlistRawData = jsonDecode(utf8.decode(res.bodyBytes));
     playlistCache[uri]["tracks"] = [...playlistCache[uri]["tracks"], ...playlistRawData["data"]["playlistV2"]["content"]["items"]];
-    return;
+    return true;
   }
 }

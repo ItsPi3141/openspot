@@ -100,16 +100,14 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             ),
           ),
           EasyLoadMore(
-            isFinished: ((playlistData["tracks"] == null ? [] : playlistData["tracks"]) as List).length >= (playlistData["totalTracks"] ?? 0),
+            isFinished: ((playlistData["tracks"] ?? []) as List).length >= (playlistData["totalTracks"] ?? 0),
             onLoadMore: () async {
-              await widget.spotifyProvider.loadMorePlaylistItems(widget.uri);
-              await Future.delayed(const Duration(seconds: 100));
-              return Future(() => true);
+              return await widget.spotifyProvider.loadMorePlaylistItems(widget.uri);
             },
             idleStatusText: "",
             loadingStatusText: "",
             failedStatusText: "",
-            finishedStatusText: "",
+            finishedStatusText: "That's all!",
             loadingWidgetColor: theme.colorScheme.primary,
             child: SliverList.separated(
               itemBuilder: (BuildContext context, int index) {
@@ -141,7 +139,6 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                 return const Divider(
                   height: 1,
                 );
-                // return const SizedBox();
               },
               itemCount: playlistData["tracks"]?.length ?? 0,
             ),
