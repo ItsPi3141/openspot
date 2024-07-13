@@ -1,15 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_load_more/easy_load_more.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:openspot/services/spotify.dart';
+import 'package:openspot/services/youtube.dart';
 import 'package:provider/provider.dart';
 
 class PlaylistViewer extends StatefulWidget {
   final String uri;
   final SpotifyProvider spotifyProvider;
-  const PlaylistViewer({super.key, required this.uri, required this.spotifyProvider});
+  final YouTubeProvider youtubeProvider;
+  const PlaylistViewer({super.key, required this.uri, required this.spotifyProvider, required this.youtubeProvider});
 
   @override
   State<PlaylistViewer> createState() => _PlaylistViewerState();
@@ -112,7 +115,16 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             child: SliverList.separated(
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                  onTap: () {},
+                  onTap: () async {
+                    final id = await widget.youtubeProvider.getYouTubeSongId(playlistData["tracks"][index]?["itemV2"]?["data"]?["name"],
+                        (playlistData["tracks"][index]?["itemV2"]?["data"]?["artists"]?["items"] as List)[0]["profile"]?["name"]);
+                    if (id == "") return;
+                    final url = await widget.youtubeProvider.getSongDownloadUrl(id);
+                    if (url == "") return;
+                    if (kDebugMode) {
+                      print("Song URL: $url");
+                    }
+                  },
                   title: Text(
                     playlistData["tracks"][index]?["itemV2"]?["data"]?["name"] ?? "",
                     softWrap: false,

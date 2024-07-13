@@ -1,12 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:openspot/services/spotify.dart';
+import 'package:openspot/services/youtube.dart';
 import 'package:openspot/src/common/playlist.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   final SpotifyProvider spotifyProvider;
-  const HomePage({super.key, required this.spotifyProvider});
+  final YouTubeProvider youTubeProvider;
+  const HomePage({super.key, required this.spotifyProvider, required this.youTubeProvider});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -154,7 +156,11 @@ class _HomePageState extends State<HomePage> {
                                             onTap: () {
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
-                                                  builder: (context) => PlaylistViewer(uri: card["uri"], spotifyProvider: widget.spotifyProvider),
+                                                  builder: (context) => PlaylistViewer(
+                                                    uri: card["uri"],
+                                                    spotifyProvider: widget.spotifyProvider,
+                                                    youtubeProvider: widget.youTubeProvider,
+                                                  ),
                                                 ),
                                               );
                                             },

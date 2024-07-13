@@ -2,6 +2,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:mdi/mdi.dart';
 import 'package:openspot/services/spotify.dart';
+import 'package:openspot/services/youtube.dart';
 import 'package:provider/provider.dart';
 
 import 'package:openspot/ui/theme_provider.dart';
@@ -68,50 +69,62 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => SpotifyProvider(),
-      builder: (context, child) => Scaffold(
-        body: IndexedStack(
-          index: selectedIndex,
-          children: [
-            HomePage(
-              spotifyProvider: Provider.of<SpotifyProvider>(context),
-            ),
-            const DiscoverPage(),
-            const LibraryPage(),
-            const SettingsPage()
-          ],
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => SpotifyProvider(),
         ),
-        bottomNavigationBar: NavigationBar(
-          destinations: const <NavigationDestination>[
-            NavigationDestination(
-              selectedIcon: Icon(Icons.home),
-              icon: Icon(Icons.home_outlined),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Icons.auto_awesome),
-              icon: Icon(Icons.auto_awesome_outlined),
-              label: 'Discover',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Mdi.bookshelf),
-              icon: Icon(Mdi.bookshelf),
-              label: 'Library',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Icons.settings),
-              icon: Icon(Icons.settings_outlined),
-              label: 'Settings',
-            ),
-          ],
-          selectedIndex: selectedIndex,
-          onDestinationSelected: (int index) {
-            setState(() {
-              selectedIndex = index;
-            });
-          },
+        ChangeNotifierProvider(
+          create: (_) => YouTubeProvider(),
         ),
+      ],
+      child: Builder(
+        builder: (BuildContext context) {
+          return Scaffold(
+            body: IndexedStack(
+              index: selectedIndex,
+              children: [
+                HomePage(
+                  spotifyProvider: Provider.of<SpotifyProvider>(context),
+                  youTubeProvider: Provider.of<YouTubeProvider>(context),
+                ),
+                const DiscoverPage(),
+                const LibraryPage(),
+                const SettingsPage()
+              ],
+            ),
+            bottomNavigationBar: NavigationBar(
+              destinations: const <NavigationDestination>[
+                NavigationDestination(
+                  selectedIcon: Icon(Icons.home),
+                  icon: Icon(Icons.home_outlined),
+                  label: 'Home',
+                ),
+                NavigationDestination(
+                  selectedIcon: Icon(Icons.auto_awesome),
+                  icon: Icon(Icons.auto_awesome_outlined),
+                  label: 'Discover',
+                ),
+                NavigationDestination(
+                  selectedIcon: Icon(Mdi.bookshelf),
+                  icon: Icon(Mdi.bookshelf),
+                  label: 'Library',
+                ),
+                NavigationDestination(
+                  selectedIcon: Icon(Icons.settings),
+                  icon: Icon(Icons.settings_outlined),
+                  label: 'Settings',
+                ),
+              ],
+              selectedIndex: selectedIndex,
+              onDestinationSelected: (int index) {
+                setState(() {
+                  selectedIndex = index;
+                });
+              },
+            ),
+          );
+        },
       ),
     );
   }

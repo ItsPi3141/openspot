@@ -5,7 +5,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:http/http.dart' as http;
 import 'package:openspot/utils.dart';
 
-class SpotifyProvider extends ChangeNotifier {
+class SpotifyProvider with ChangeNotifier {
   String bearerToken = "";
   String clientToken = "";
   String spotifyToken = "";
@@ -50,6 +50,8 @@ class SpotifyProvider extends ChangeNotifier {
         print("Spotify client id: $clientId");
         print("Spotify web player url: $spotifyWebPlayerUrl");
       }
+    } else {
+      return;
     }
 
     // get query hash
@@ -68,6 +70,8 @@ class SpotifyProvider extends ChangeNotifier {
       if (kDebugMode) {
         print("Spotify playlist query hash: $playlistQueryHash");
       }
+    } else {
+      return;
     }
 
     // get client token
