@@ -118,6 +118,10 @@ class SpotifyProvider with ChangeNotifier {
         ))
             .body) ??
         "");
+    if (kDebugMode) {
+      print("Timezone: $timezone");
+      print("Country: ${geolocationData["country"] ?? "US"}");
+    }
     final queryVariables = Uri.encodeComponent(
       jsonEncode(
         {"timeZone": timezone, "sp_t": spotifyToken, "country": geolocationData["country"] ?? "US", "facet": null, "sectionItemsLimit": 10},
@@ -180,7 +184,10 @@ class SpotifyProvider with ChangeNotifier {
         "authorization": "Bearer $bearerToken",
       },
     );
-    if (res.statusCode != 200) return {};
+    if (res.statusCode != 200) {
+      reload();
+      return {};
+    }
 
     var playlistRawData = jsonDecode(utf8.decode(res.bodyBytes));
     var playlistData = {
@@ -236,7 +243,10 @@ class SpotifyProvider with ChangeNotifier {
       },
     );
 
-    if (res.statusCode != 200) return false;
+    if (res.statusCode != 200) {
+      reload();
+      return false;
+    }
 
     var playlistRawData = jsonDecode(utf8.decode(res.bodyBytes));
     playlistCache[uri]["tracks"] = [...playlistCache[uri]["tracks"], ...playlistRawData["data"]["playlistV2"]["content"]["items"]];

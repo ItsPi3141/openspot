@@ -32,9 +32,11 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
 
     (() async {
       var tmp = await widget.spotifyProvider.getPlaylist(widget.uri);
-      setState(() {
-        playlistData = tmp;
-      });
+      try {
+        setState(() {
+          playlistData = tmp;
+        });
+      } catch (_) {}
     })();
 
     return Scaffold(
