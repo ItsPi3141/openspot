@@ -81,17 +81,29 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
       child: Builder(
         builder: (BuildContext context) {
           return Scaffold(
-            body: IndexedStack(
-              index: selectedIndex,
-              children: [
-                HomePage(
-                  spotifyProvider: Provider.of<SpotifyProvider>(context),
-                  youTubeProvider: Provider.of<YouTubeProvider>(context),
+            body: Navigator(
+              pages: [
+                MaterialPage(
+                  child: IndexedStack(
+                    index: selectedIndex,
+                    children: [
+                      HomePage(
+                        spotifyProvider: Provider.of<SpotifyProvider>(context),
+                        youTubeProvider: Provider.of<YouTubeProvider>(context),
+                      ),
+                      const DiscoverPage(),
+                      const LibraryPage(),
+                      const SettingsPage()
+                    ],
+                  ),
                 ),
-                const DiscoverPage(),
-                const LibraryPage(),
-                const SettingsPage()
               ],
+              onPopPage: (route, result) {
+                if (!route.didPop(result)) {
+                  return false;
+                }
+                return true;
+              },
             ),
             bottomNavigationBar: NavigationBar(
               destinations: const <NavigationDestination>[
