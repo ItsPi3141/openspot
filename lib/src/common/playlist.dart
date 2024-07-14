@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_load_more/easy_load_more.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:openspot/services/audioplayer.dart';
 import 'package:openspot/services/spotify.dart';
 import 'package:openspot/services/youtube.dart';
@@ -40,88 +42,89 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          const SliverAppBar(
+          SliverAppBar(
             stretch: false,
             pinned: true,
             snap: true,
             floating: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text("Playlist"),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Card(
-                        clipBehavior: Clip.antiAlias,
-                        child: CachedNetworkImage(
-                          imageUrl: playlistData["coverImage"]?["url"] ?? "",
-                          height: 128,
-                          width: 128,
-                          errorWidget: (context, url, error) => Icon(
-                            Icons.album,
-                            size: 96.0,
-                            color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
-                          ),
-                          placeholder: (context, url) => Icon(
-                            Icons.album,
-                            size: 96.0,
-                            color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+            expandedHeight: 192,
+            flexibleSpace: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                var height = constraints.biggest.height - MediaQuery.of(context).viewPadding.top;
+
+                return FlexibleSpaceBar(
+                  collapseMode: CollapseMode.parallax,
+                  title: Text(height < 60 ? playlistData["name"] ?? "Playlist" : ""),
+                  background: Padding(
+                    padding: EdgeInsets.only(left: 16.0, right: 16.0, top: MediaQuery.of(context).viewPadding.top + 48),
+                    child: Row(
+                      children: [
+                        Card(
+                          clipBehavior: Clip.antiAlias,
+                          child: CachedNetworkImage(
+                            imageUrl: playlistData["coverImage"]?["url"] ?? "",
+                            height: 128,
+                            width: 128,
+                            errorWidget: (context, url, error) => Icon(
+                              Icons.album,
+                              size: 96.0,
+                              color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                            ),
+                            placeholder: (context, url) => Icon(
+                              Icons.album,
+                              size: 96.0,
+                              color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              playlistData["name"] ?? "",
-                              style: theme.textTheme.titleLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              playlistData["description"] ?? "",
-                              style: theme.textTheme.bodyMedium,
-                            ),
-                            const SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: () {},
-                              child: Row(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(69),
-                                    child: CachedNetworkImage(
-                                      imageUrl: playlistData["owner"]?["profilePicture"] ?? "",
-                                      height: 24,
-                                      width: 24,
-                                      errorWidget: (context, url, error) => Icon(
-                                        Icons.person,
-                                        color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
-                                      ),
-                                      placeholder: (context, url) => Icon(
-                                        Icons.person,
-                                        color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                playlistData["name"] ?? "",
+                                style: theme.textTheme.titleLarge,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                playlistData["description"] ?? "",
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              GestureDetector(
+                                onTap: () {},
+                                child: Row(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(69),
+                                      child: CachedNetworkImage(
+                                        imageUrl: playlistData["owner"]?["profilePicture"] ?? "",
+                                        height: 24,
+                                        width: 24,
+                                        errorWidget: (context, url, error) => Icon(
+                                          Icons.person,
+                                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                        ),
+                                        placeholder: (context, url) => Icon(
+                                          Icons.person,
+                                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(playlistData["owner"]?["name"] ?? "")
-                                ],
+                                    const SizedBox(width: 8),
+                                    Text(playlistData["owner"]?["name"] ?? "")
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
-              childCount: 1,
             ),
           ),
           EasyLoadMore(
