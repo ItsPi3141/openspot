@@ -154,8 +154,8 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                     if (kDebugMode) {
                       print("Song URL: $url");
                     }
-                    setSongInfo(title, artist, coverImage);
-                    playSong(url: url);
+                    setSongInfo(title, artist, coverImage, url);
+                    playSong();
                   },
                   title: Text(
                     title,

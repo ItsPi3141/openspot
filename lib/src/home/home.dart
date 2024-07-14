@@ -126,10 +126,12 @@ class _HomePageState extends State<HomePage> {
                                                         fit: BoxFit.cover,
                                                         errorWidget: (context, url, error) => Icon(
                                                           Icons.person,
+                                                          size: 96.0,
                                                           color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
                                                         ),
                                                         placeholder: (context, url) => Icon(
                                                           Icons.person,
+                                                          size: 96.0,
                                                           color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
                                                         ),
                                                       ),
@@ -182,7 +184,16 @@ class _HomePageState extends State<HomePage> {
                                                       child: CachedNetworkImage(
                                                         imageUrl: profilePicture,
                                                         fit: BoxFit.cover,
-                                                        errorWidget: (context, url, error) => const Icon(Icons.error_outline_rounded),
+                                                        errorWidget: (context, url, error) => Icon(
+                                                          Icons.album,
+                                                          size: 96.0,
+                                                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                                        ),
+                                                        placeholder: (context, url) => Icon(
+                                                          Icons.album,
+                                                          size: 96.0,
+                                                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                                        ),
                                                       ),
                                                     ),
                                                   ),

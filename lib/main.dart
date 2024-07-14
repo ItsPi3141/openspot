@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:mdi/mdi.dart';
 import 'package:openspot/services/spotify.dart';
 import 'package:openspot/services/youtube.dart';
@@ -13,7 +14,14 @@ import 'package:openspot/src/library/library.dart';
 import 'package:openspot/src/discover/discover.dart';
 import 'package:openspot/src/settings/settings.dart';
 
-void main() {
+Future<void> main() async {
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.itspi3141.openspot.channel.audio',
+    androidNotificationChannelName: 'Music',
+    androidNotificationOngoing: true,
+    androidNotificationClickStartsActivity: true,
+    androidResumeOnClick: true,
+  );
   runApp(const App());
 }
 
@@ -113,7 +121,7 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
               },
             ),
             floatingActionButton: const MusicPlayer(),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+            floatingActionButtonLocation: MusicPlayerFabLocation(),
             bottomNavigationBar: NavigationBar(
               destinations: const <NavigationDestination>[
                 NavigationDestination(

@@ -10,9 +10,8 @@ class MusicPlayer extends StatefulWidget {
 }
 
 class _MusicPlayerState extends State<MusicPlayer> {
-  final compressedHeight = 48.0;
-  final bottomMargin = 0.0;
-  final sideMargin = 10.0;
+  final compressedHeight = 72.0;
+  final sideMargin = 6.0;
 
   @override
   void initState() {
@@ -24,7 +23,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
     musicPlayerStateChange.addListener(() => setState(() {}));
 
     return Container(
-      margin: EdgeInsets.only(left: sideMargin, right: sideMargin, bottom: bottomMargin),
+      margin: EdgeInsets.symmetric(horizontal: sideMargin),
       width: MediaQuery.of(context).size.width,
       height: compressedHeight,
       child: Card.filled(
@@ -57,26 +56,44 @@ class _MusicPlayerState extends State<MusicPlayer> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(songTitle.value, style: Theme.of(context).textTheme.titleMedium),
-                      Text(songArtist.value),
+                      Text(
+                        songTitle.value,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        softWrap: false,
+                      ),
+                      Text(
+                        songArtist.value,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        softWrap: false,
+                      ),
                     ],
                   ),
                 ),
               ),
               IconButton(
                 onPressed: () {
-                  if (isPlaying.value) {
+                  if (player.playing) {
                     pauseSong();
                   } else {
                     playSong();
                   }
                 },
-                icon: Icon(isPlaying.value ? Icons.pause : Icons.play_arrow),
+                icon: Icon(player.playing ? Icons.pause : Icons.play_arrow),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class MusicPlayerFabLocation extends FloatingActionButtonLocation {
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    return Offset(0, 4 + scaffoldGeometry.contentBottom - (scaffoldGeometry.scaffoldSize.height - scaffoldGeometry.contentBottom));
   }
 }
