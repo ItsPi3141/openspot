@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:openspot/services/audioplayer.dart';
 import 'package:openspot/services/spotify.dart';
 import 'package:openspot/services/youtube.dart';
 import 'package:provider/provider.dart';
@@ -116,6 +117,14 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             loadingWidgetColor: theme.colorScheme.primary,
             child: SliverList.separated(
               itemBuilder: (BuildContext context, int index) {
+                String title = playlistData["tracks"][index]?["itemV2"]?["data"]?["name"] ?? "";
+                String artist =
+                    (playlistData["tracks"][index]?["itemV2"]?["data"]?["artists"]?["items"] as List).map((e) => e["profile"]?["name"] ?? "").join(", ");
+                String coverImage = (playlistData["tracks"]?[index]?["itemV2"]?["data"]?["albumOfTrack"]?["coverArt"]?["sources"] as List).firstWhere(
+                      (image) => image["width"] == 640,
+                    )?["url"] ??
+                    playlistData["tracks"]?[index]?["itemV2"]?["data"]?["albumOfTrack"]?["coverArt"]?["sources"]?[0]?["url"];
+
                 return ListTile(
                   onTap: () async {
                     final id = await widget.youtubeProvider.getYouTubeSongId(playlistData["tracks"][index]?["itemV2"]?["data"]?["name"],
@@ -126,25 +135,23 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                     if (kDebugMode) {
                       print("Song URL: $url");
                     }
+                    setSongInfo(title, artist, coverImage);
+                    playSong(url: url);
                   },
                   title: Text(
-                    playlistData["tracks"][index]?["itemV2"]?["data"]?["name"] ?? "",
+                    title,
                     softWrap: false,
                     overflow: TextOverflow.fade,
                   ),
                   subtitle: Text(
-                    (playlistData["tracks"][index]?["itemV2"]?["data"]?["artists"]?["items"] as List).map((e) => e["profile"]?["name"] ?? "").join(", "),
+                    artist,
                     softWrap: false,
                     overflow: TextOverflow.fade,
                   ),
                   leading: Builder(builder: (context) {
-                    var imageUrl = (playlistData["tracks"]?[index]?["itemV2"]?["data"]?["albumOfTrack"]?["coverArt"]?["sources"] as List).firstWhere(
-                          (image) => image["width"] == 640,
-                        )?["url"] ??
-                        playlistData["tracks"]?[index]?["itemV2"]?["data"]?["albumOfTrack"]?["coverArt"]?["sources"]?[0]?["url"];
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
-                      child: imageUrl != null ? CachedNetworkImage(imageUrl: imageUrl, height: 48, width: 48) : const SizedBox(),
+                      child: coverImage.isEmpty ? const SizedBox(height: 48, width: 48) : CachedNetworkImage(imageUrl: coverImage, height: 48, width: 48),
                     );
                   }),
                 );

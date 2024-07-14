@@ -27,11 +27,9 @@ class SettingsPage extends StatelessWidget {
               flexibleSpace: FlexibleSpaceBar(
                 title: Text(
                   "Settings",
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onBackground),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 ),
-                titlePadding:
-                    const EdgeInsetsDirectional.only(start: 16.0, bottom: 16.0),
+                titlePadding: const EdgeInsetsDirectional.only(start: 16.0, bottom: 16.0),
               ),
             );
           },
@@ -58,15 +56,11 @@ class SettingsPage extends StatelessWidget {
                   return InkWell(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => [
-                          const AppearanceScreen(),
-                          const AboutScreen()
-                        ][e["index"] as int],
+                        builder: (context) => [const AppearanceScreen(), const AboutScreen()][e["index"] as int],
                       ));
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                       child: Row(
                         children: [
                           Icon(e["icon"]! as IconData),
@@ -74,8 +68,7 @@ class SettingsPage extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              DynamicColorText(e["title"] as String,
-                                  style: theme.textTheme.titleLarge),
+                              DynamicColorText(e["title"] as String, style: theme.textTheme.titleLarge),
                               DynamicColorText(e["description"] as String),
                             ],
                           )

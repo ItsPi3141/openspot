@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mdi/mdi.dart';
 import 'package:openspot/services/spotify.dart';
 import 'package:openspot/services/youtube.dart';
+import 'package:openspot/src/common/player.dart';
 import 'package:provider/provider.dart';
 
 import 'package:openspot/ui/theme_provider.dart';
@@ -37,14 +38,18 @@ class _AppState extends State<App> {
             var themeProvider = Provider.of<ThemeProvier>(context);
 
             return MaterialApp(
+              debugShowCheckedModeBanner: false,
               title: "Openspot",
               theme: ThemeData(
                 useMaterial3: true,
                 colorScheme: themeProvider.useMaterialYou ? lightDynamic ?? _defaultLightColorScheme : _defaultLightColorScheme,
+                splashFactory: InkSparkle.splashFactory,
+                brightness: Brightness.light,
               ),
               darkTheme: ThemeData(
                 useMaterial3: true,
                 colorScheme: themeProvider.useMaterialYou ? darkDynamic ?? _defaultDarkColorScheme : _defaultDarkColorScheme,
+                splashFactory: InkSparkle.splashFactory,
                 brightness: Brightness.dark,
               ),
               themeMode: themeProvider.currentTheme,
@@ -80,24 +85,26 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
       ],
       child: Builder(
         builder: (BuildContext context) {
+          List<MaterialPage> pageStack = [
+            MaterialPage(
+              child: IndexedStack(
+                index: selectedIndex,
+                children: [
+                  HomePage(
+                    spotifyProvider: Provider.of<SpotifyProvider>(context),
+                    youTubeProvider: Provider.of<YouTubeProvider>(context),
+                  ),
+                  const DiscoverPage(),
+                  const LibraryPage(),
+                  const SettingsPage()
+                ],
+              ),
+            ),
+          ];
+
           return Scaffold(
             body: Navigator(
-              pages: [
-                MaterialPage(
-                  child: IndexedStack(
-                    index: selectedIndex,
-                    children: [
-                      HomePage(
-                        spotifyProvider: Provider.of<SpotifyProvider>(context),
-                        youTubeProvider: Provider.of<YouTubeProvider>(context),
-                      ),
-                      const DiscoverPage(),
-                      const LibraryPage(),
-                      const SettingsPage()
-                    ],
-                  ),
-                ),
-              ],
+              pages: pageStack,
               onPopPage: (route, result) {
                 if (!route.didPop(result)) {
                   return false;
@@ -105,6 +112,8 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
                 return true;
               },
             ),
+            floatingActionButton: const MusicPlayer(),
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
             bottomNavigationBar: NavigationBar(
               destinations: const <NavigationDestination>[
                 NavigationDestination(
