@@ -35,11 +35,11 @@ class _HomePageState extends State<HomePage> {
                 child: SearchAnchor(
                   builder: (BuildContext context, SearchController controller) {
                     return const SearchBar(
-                      padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
-                      elevation: WidgetStatePropertyAll<double>(
+                      padding: MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
+                      elevation: MaterialStatePropertyAll<double>(
                         3.0,
                       ),
-                      shadowColor: WidgetStatePropertyAll<Color>(Colors.transparent),
+                      shadowColor: MaterialStatePropertyAll<Color>(Colors.transparent),
                       leading: Icon(Icons.search),
                       hintText: "Search for a song...",
                     );
@@ -110,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                                                 orElse: () => card["visuals"]["avatarImage"]["sources"][0])?["url"] ??
                                             "";
                                         return Card(
-                                          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                                          color: Theme.of(context).colorScheme.surface,
                                           clipBehavior: Clip.antiAlias,
                                           child: InkWell(
                                             onTap: () {},
