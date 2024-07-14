@@ -1,10 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:openspot/services/audioplayer.dart';
-import 'package:openspot/ui/theme_provider.dart';
-import 'package:provider/provider.dart';
 
 class MusicPlayer extends StatefulWidget {
   const MusicPlayer({super.key});
@@ -14,7 +10,7 @@ class MusicPlayer extends StatefulWidget {
 }
 
 class _MusicPlayerState extends State<MusicPlayer> {
-  final compressedHeight = 64.0;
+  final compressedHeight = 48.0;
   final bottomMargin = 0.0;
   final sideMargin = 10.0;
 
@@ -32,28 +28,53 @@ class _MusicPlayerState extends State<MusicPlayer> {
       width: MediaQuery.of(context).size.width,
       height: compressedHeight,
       child: Card.filled(
-        child: Row(
-          children: [
-            (songCover.value.isEmpty ? const SizedBox(height: 48, width: 48) : CachedNetworkImage(imageUrl: songCover.value, height: 48, width: 48)),
-            Expanded(
-              child: Column(
-                children: [
-                  Text(songTitle.value),
-                  Text(songArtist.value),
-                ],
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Row(
+            children: [
+              Card.filled(
+                color: Colors.white.withOpacity(0.1),
+                shadowColor: Colors.transparent,
+                clipBehavior: Clip.antiAlias,
+                child: CachedNetworkImage(
+                  imageUrl: songCover.value,
+                  height: 48,
+                  width: 48,
+                  errorWidget: (context, url, error) => Icon(
+                    Icons.music_note_rounded,
+                    color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                  ),
+                  placeholder: (context, url) => Icon(
+                    Icons.music_note_rounded,
+                    color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                  ),
+                ),
               ),
-            ),
-            IconButton(
-              onPressed: () {
-                if (isPlaying.value) {
-                  pauseSong();
-                } else {
-                  playSong();
-                }
-              },
-              icon: Icon(isPlaying.value ? Icons.pause : Icons.play_arrow),
-            ),
-          ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(songTitle.value, style: Theme.of(context).textTheme.titleMedium),
+                      Text(songArtist.value),
+                    ],
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  if (isPlaying.value) {
+                    pauseSong();
+                  } else {
+                    playSong();
+                  }
+                },
+                icon: Icon(isPlaying.value ? Icons.pause : Icons.play_arrow),
+              ),
+            ],
+          ),
         ),
       ),
     );

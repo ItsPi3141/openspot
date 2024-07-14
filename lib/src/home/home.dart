@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:openspot/services/spotify.dart';
 import 'package:openspot/services/youtube.dart';
 import 'package:openspot/src/common/playlist.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   final SpotifyProvider spotifyProvider;
@@ -122,13 +121,18 @@ class _HomePageState extends State<HomePage> {
                                                     borderRadius: BorderRadius.circular(8.0),
                                                     child: AspectRatio(
                                                       aspectRatio: 1,
-                                                      child: profilePicture.isEmpty
-                                                          ? const SizedBox()
-                                                          : CachedNetworkImage(
-                                                              imageUrl: profilePicture,
-                                                              fit: BoxFit.cover,
-                                                              errorWidget: (context, url, error) => const Icon(Icons.error_outline_rounded),
-                                                            ),
+                                                      child: CachedNetworkImage(
+                                                        imageUrl: profilePicture,
+                                                        fit: BoxFit.cover,
+                                                        errorWidget: (context, url, error) => Icon(
+                                                          Icons.person,
+                                                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                                        ),
+                                                        placeholder: (context, url) => Icon(
+                                                          Icons.person,
+                                                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
                                                   const SizedBox(

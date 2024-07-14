@@ -7,8 +7,8 @@ final musicPlayerStateChange = ValueNotifier(false);
 
 final isPlaying = ValueNotifier(false);
 
-final songTitle = ValueNotifier("");
-final songArtist = ValueNotifier("");
+final songTitle = ValueNotifier("title");
+final songArtist = ValueNotifier("artist");
 final songCover = ValueNotifier("");
 
 void setSongInfo(String title, String author, String coverUrl) {

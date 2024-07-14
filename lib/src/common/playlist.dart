@@ -1,13 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_load_more/easy_load_more.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:openspot/services/audioplayer.dart';
 import 'package:openspot/services/spotify.dart';
 import 'package:openspot/services/youtube.dart';
-import 'package:provider/provider.dart';
 
 class PlaylistViewer extends StatefulWidget {
   final String uri;
@@ -61,9 +58,21 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                     children: [
                       Card(
                         clipBehavior: Clip.antiAlias,
-                        child: (playlistData["coverImage"]?["url"] != null
-                            ? CachedNetworkImage(imageUrl: playlistData["coverImage"]["url"], height: 128, width: 128)
-                            : const SizedBox(height: 128, width: 128)),
+                        child: CachedNetworkImage(
+                          imageUrl: playlistData["coverImage"]?["url"] ?? "",
+                          height: 128,
+                          width: 128,
+                          errorWidget: (context, url, error) => Icon(
+                            Icons.album,
+                            size: 96.0,
+                            color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                          ),
+                          placeholder: (context, url) => Icon(
+                            Icons.album,
+                            size: 96.0,
+                            color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -86,9 +95,19 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(69),
-                                    child: (playlistData["owner"]?["profilePicture"] != null
-                                        ? CachedNetworkImage(imageUrl: playlistData["owner"]["profilePicture"], height: 24, width: 24)
-                                        : const SizedBox(height: 24, width: 24)),
+                                    child: CachedNetworkImage(
+                                      imageUrl: playlistData["owner"]?["profilePicture"] ?? "",
+                                      height: 24,
+                                      width: 24,
+                                      errorWidget: (context, url, error) => Icon(
+                                        Icons.person,
+                                        color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                      ),
+                                      placeholder: (context, url) => Icon(
+                                        Icons.person,
+                                        color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                      ),
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   Text(playlistData["owner"]?["name"] ?? "")
@@ -151,7 +170,19 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                   leading: Builder(builder: (context) {
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
-                      child: coverImage.isEmpty ? const SizedBox(height: 48, width: 48) : CachedNetworkImage(imageUrl: coverImage, height: 48, width: 48),
+                      child: CachedNetworkImage(
+                        imageUrl: coverImage,
+                        height: 48,
+                        width: 48,
+                        errorWidget: (context, url, error) => Icon(
+                          Icons.music_note_rounded,
+                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                        ),
+                        placeholder: (context, url) => Icon(
+                          Icons.music_note_rounded,
+                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                        ),
+                      ),
                     );
                   }),
                 );
