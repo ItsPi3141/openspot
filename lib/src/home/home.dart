@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  widget.spotifyProvider.homeFeedData["data"]?["home"]["greeting"]["text"] ?? "",
+                  widget.spotifyProvider.homeFeedData["data"]?["home"]["greeting"]["transformedLabel"] ?? "Hello!",
                   textAlign: TextAlign.left,
                   style: theme.textTheme.headlineSmall,
                 ),
@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                                     height: 32,
                                   ),
                                   Text(
-                                    section["data"]["title"]["text"] ?? "",
+                                    section["data"]["title"]["transformedLabel"] ?? "",
                                     style: theme.textTheme.titleLarge,
                                   ),
                                 ],
