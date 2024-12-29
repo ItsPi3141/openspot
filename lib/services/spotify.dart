@@ -11,10 +11,9 @@ class SpotifyProvider with ChangeNotifier {
   String spotifyToken = "";
 
   String clientId = "";
+  String clientVersion = "";
 
-  String spotifyWebPlayerUrl = "";
-  String homepageQueryHash = "";
-  String playlistQueryHash = "";
+  Map<String, String> queryHashes = {};
 
   Map<String, dynamic> homeFeedData = {};
 
@@ -38,23 +37,21 @@ class SpotifyProvider with ChangeNotifier {
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
       },
     );
-    if (spotifyWebpage.statusCode == 200) {
-      bearerToken = RegExp(r'(?<="accessToken":")(.+?)(?=")').stringMatch(spotifyWebpage.body) ?? "";
-      spotifyToken = RegExp(r'(?<="correlationId":")(.+?)(?=")').stringMatch(spotifyWebpage.body) ?? "";
-      clientId = RegExp(r'(?<="clientId":")(.+?)(?=")').stringMatch(spotifyWebpage.body) ?? "";
-      spotifyWebPlayerUrl =
-          RegExp(r'(?<=<script src=")(https:\/\/open.spotifycdn.com\/cdn\/build\/web-player\/web-player.+?)(?=")').stringMatch(spotifyWebpage.body) ?? "";
-      if (kDebugMode) {
-        print("Spotify bearer token: $bearerToken");
-        print("Spotify token: $spotifyToken");
-        print("Spotify client id: $clientId");
-        print("Spotify web player url: $spotifyWebPlayerUrl");
-      }
-    } else {
-      return;
+    if (spotifyWebpage.statusCode != 200) return;
+    bearerToken = RegExp(r'(?<="accessToken":")(.+?)(?=")').stringMatch(spotifyWebpage.body) ?? "";
+    spotifyToken = RegExp(r'(?<="correlationId":")(.+?)(?=")').stringMatch(spotifyWebpage.body) ?? "";
+    clientId = RegExp(r'(?<="clientId":")(.+?)(?=")').stringMatch(spotifyWebpage.body) ?? "";
+    clientVersion = RegExp(r'(?<="clientVersion":")(.+?)(?=")').stringMatch(spotifyWebpage.body) ?? "";
+    final spotifyWebPlayerUrl =
+        RegExp(r'(?<=<script src=")(https:\/\/open.spotifycdn.com\/cdn\/build\/web-player\/web-player.+?)(?=")').stringMatch(spotifyWebpage.body) ?? "";
+    if (kDebugMode) {
+      print("Spotify bearer token: $bearerToken");
+      print("Spotify token: $spotifyToken");
+      print("Spotify client id: $clientId");
+      print("Spotify web player url: $spotifyWebPlayerUrl");
     }
 
-    // get query hash
+    // get query hashes in main web player file
     final spotifyWebPlayer = await http.get(
       Uri.parse(spotifyWebPlayerUrl),
       headers: {
@@ -62,16 +59,49 @@ class SpotifyProvider with ChangeNotifier {
       },
     );
     if (spotifyWebPlayer.statusCode == 200) {
-      homepageQueryHash = RegExp(r'(?<="home","query",")(.+?)(?=")').stringMatch(spotifyWebPlayer.body) ?? "";
-      if (kDebugMode) {
-        print("Spotify homepage query hash: $homepageQueryHash");
-      }
-      playlistQueryHash = RegExp(r'(?<="fetchPlaylist","query",")(.+?)(?=")').stringMatch(spotifyWebPlayer.body) ?? "";
-      if (kDebugMode) {
-        print("Spotify playlist query hash: $playlistQueryHash");
+      final queries = RegExp(r'(?<="(?<name>.+?)","query",")(?<hash>.+?)(?=")').allMatches(spotifyWebPlayer.body);
+      for (final query in queries) {
+        if (query.namedGroup("name") == null || query.namedGroup("hash") == null) return;
+        queryHashes[query.namedGroup("name")!] = query.namedGroup("hash")!;
+        if (kDebugMode) {
+          print("Spotify ${query.namedGroup("name")!} query hash: ${query.namedGroup("hash")!}");
+        }
       }
     } else {
       return;
+    }
+
+    // get additional query hashes
+    // extract possible file ids
+    final possibleFileIds = RegExp(
+            r'build\/web-player\/(?<id>\d+)\.css":"https:\/\/open-exp\.spotifycdn\.com\/cdn\/build\/web-player\/\1\.(?<hash>[a-z0-9]+)\.css","build\/web-player\/\1\.js":"https:\/\/open-exp\.spotifycdn\.com\/cdn\/build\/web-player\/\1\.\2\.js')
+        .allMatches(spotifyWebPlayer.body)
+        .map((RegExpMatch m) => m.namedGroup("id"));
+    // extract proper hashes
+    final hashes = <String, String>{};
+    RegExp(r'(?<=\+{(\d+:"[a-z0-9]+",?)*)(?<m>\d+:"[a-z0-9]+"),?(?=(\d+:"[a-z0-9]+",?)*}\[.+?]\+"\.js")')
+        .allMatches(spotifyWebPlayer.body)
+        .forEach((RegExpMatch m) {
+      final entry = m.namedGroup("m");
+      if (entry == null) return;
+      final parsed = RegExp(r'(?<id>\d+):"(?<hash>[a-z0-9]+)"').firstMatch(entry);
+      if (parsed?.namedGroup("id") == null || parsed?.namedGroup("hash") == null) return;
+      hashes[parsed!.namedGroup("id")!] = parsed.namedGroup("hash")!;
+    });
+    // fetch each js file
+    for (final id in possibleFileIds) {
+      final url = "https://open-exp.spotifycdn.com/cdn/build/web-player/$id.${hashes[id]}.js";
+      final js = await http.get(Uri.parse(url));
+      if (js.statusCode == 200) {
+        final queries = RegExp(r'(?<="(?<name>.+?)","query",")(?<hash>.+?)(?=")').allMatches(js.body);
+        for (final query in queries) {
+          if (query.namedGroup("name") == null || query.namedGroup("hash") == null) return;
+          queryHashes[query.namedGroup("name")!] = query.namedGroup("hash")!;
+          if (kDebugMode) {
+            print("Spotify ${query.namedGroup("name")!} query hash: ${query.namedGroup("hash")!}");
+          }
+        }
+      }
     }
 
     // get client token
@@ -88,7 +118,7 @@ class SpotifyProvider with ChangeNotifier {
       body: json.encode(
         {
           "client_data": {
-            "client_version": "1.2.69.420.${randomAlphanumeric(9)}", // format: 1.2.36.659.gbea22fb8
+            "client_version": clientVersion,
             "client_id": clientId,
             "js_sdk_data": {
               "device_brand": "unknown",
@@ -132,7 +162,7 @@ class SpotifyProvider with ChangeNotifier {
         {
           "persistedQuery": {
             "version": 1,
-            "sha256Hash": homepageQueryHash,
+            "sha256Hash": queryHashes["home"],
           }
         },
       ),
@@ -172,7 +202,7 @@ class SpotifyProvider with ChangeNotifier {
         {
           "persistedQuery": {
             "version": 1,
-            "sha256Hash": playlistQueryHash,
+            "sha256Hash": queryHashes["fetchPlaylist"],
           }
         },
       ),
@@ -229,7 +259,7 @@ class SpotifyProvider with ChangeNotifier {
         {
           "persistedQuery": {
             "version": 1,
-            "sha256Hash": playlistQueryHash,
+            "sha256Hash": queryHashes["fetchPlaylist"],
           }
         },
       ),

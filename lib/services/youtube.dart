@@ -69,7 +69,7 @@ class YouTubeProvider with ChangeNotifier {
         return decipherTransformationsJs;
       }
 
-      String transformationsFuncName = _getTextBetween(baseJs, 'a=a.split("");', ".");
+      String transformationsFuncName = RegExp(r'[a-zA-Z0-9_]+=[a-zA-Z0-9_]+\.split\(""\);(?<function>.+?)\.').firstMatch(baseJs)!.namedGroup("function")!;
       if (transformationsFuncName.isNotEmpty) {
         // find function declaration
         String declaration = "var $transformationsFuncName=";
@@ -88,7 +88,9 @@ class YouTubeProvider with ChangeNotifier {
         return decipherJs;
       }
 
-      String deciphFuncName = _getTextBetween(baseJs, 'a.set("alr","yes");c&&(c=', "(decodeURIComponent(c)");
+      String deciphFuncName = RegExp(r'[a-zA-Z0-9_]+\.set\("alr","yes"\);[a-zA-Z0-9_]+&&\([a-zA-Z0-9_]+=(?<function>.+?)\(decodeURIComponent\([a-zA-Z0-9_]+\)')
+          .firstMatch(baseJs)!
+          .namedGroup("function")!;
       if (deciphFuncName.isNotEmpty) {
         // find function declaration
         String declaration = '$deciphFuncName=function(a)';
@@ -108,7 +110,10 @@ class YouTubeProvider with ChangeNotifier {
         return nTransformJs;
       }
 
-      String ncodeFuncName = _getTextBetween(baseJs, "c=a.get(b))&&(c=", "(c)");
+      // If this breaks in the future, it may be useful to match the function's declaration rather than its usage
+      String ncodeFuncName = RegExp(r'var [a-zA-Z0-9_]+=(?<function>[a-zA-Z0-9_]+|\[[a-zA-Z0-9_]+\]);([a-zA-Z0-9_]+)\.[a-zA-Z0-9_]+=\2[a-zA-Z0-9_.]+prototype;')
+          .firstMatch(baseJs)!
+          .namedGroup("function")!;
       if (ncodeFuncName.contains("[")) {
         // it could be something like
         // var wrapperArray=[actualFunction];
