@@ -15,7 +15,7 @@ class SpotifyProvider with ChangeNotifier {
 
   Map<String, String> queryHashes = {};
 
-  Map<String, dynamic> homeFeedData = {};
+  Map homeFeedData = {};
 
   Map<String, dynamic> playlistCache = {};
 
@@ -141,6 +141,107 @@ class SpotifyProvider with ChangeNotifier {
     }
   }
 
+  // queryAlbumTrackUris
+  // queryTrackArtists
+  // seoRecommendedPlaylist
+  // seoRecommendedPlaylistUser
+  // seoRecommendedPodcastPopularEpisode
+  // similarAlbumsBasedOnThisTrack
+  // episodeSponsoredContent
+  // queryNpvCinemaArtist
+  // getAlbum
+  // queryAlbumTracks
+  // queryArtistOverview
+  // canvas
+  // getAlbumNameAndTracks
+  // getArtistNameAndTracks
+  // queryWhatsNewFeed
+  // queryWhatsNewFeedWithGatedPodcastRelations
+  // whatsNewFeedNewItems
+  // isFollowingUsers
+  // decorateContextEpisodesOrChapters
+  // decorateContextTracks
+  // isCurated
+  // editablePlaylists
+  // libraryV3
+  // areEntitiesInLibrary
+  // fetchLibraryTracks
+  // fetchLibraryEpisodes
+  // fetchLibraryEpisodesWithGatedEntityRelations
+  // fetchPlaylist
+  // fetchPlaylistWithGatedEntityRelations
+  // fetchPlaylistMetadata
+  // fetchPlaylistContents
+  // fetchPlaylistContentsWithGatedEntityRelations
+  // decoratePlaylists
+  // accountAttributes
+  // fetchEntitiesForRecentlyPlayed
+  // queryShowAccessInfo
+  // queryShowAccessInfoWithGatedPodcastsRelations
+  // queryShowMetadataV2
+  // queryShowMetadataV2WithGatedEntityRelations
+  // queryBookChapters
+  // getEpisodeOrChapter
+  // getEpisodeOrChapterWithGatedEntityRelations
+  // queryPodcastEpisodes
+  // queryPodcastEpisodesWithGatedEntityRelations
+  // centralisedStatePlayerOptions
+  // smartShuffle
+  // profileAttributes
+  // getAlbumNameAndTracks
+  // getEpisodeName
+  // getPodcastOrBookName
+  // getTrackName
+  // fetchExtractedColors
+  // getDynamicColors
+  // getDynamicColorsByUris
+  // queryArtistAppearsOn
+  // queryArtistDiscographyAlbums
+  // queryArtistDiscographySingles
+  // queryArtistDiscographyCompilations
+  // queryArtistDiscographyAll
+  // queryArtistDiscographyOverview
+  // queryArtistDiscoveredOn
+  // queryArtistFeaturing
+  // queryArtistPlaylists
+  // queryArtistRelated
+  // queryArtistRelatedVideos
+  // queryArtistMinimal
+  // ArtistConcerts
+  // ArtistConcertsPageLocation
+  // fansFirstPresales
+  // home
+  // homeSection
+  // homePinnedSections
+  Future<Map?> getDataFromApi(String query, Object variables) async {
+    if (queryHashes[query] == null) return null;
+
+    final queryVariables = Uri.encodeComponent(
+      jsonEncode(variables),
+    );
+    final queryExtensions = Uri.encodeComponent(
+      jsonEncode(
+        {
+          "persistedQuery": {
+            "version": 1,
+            "sha256Hash": queryHashes[query],
+          }
+        },
+      ),
+    );
+    final res = await http.get(
+      Uri.parse("https://api-partner.spotify.com/pathfinder/v1/query?operationName=$query&variables=$queryVariables&extensions=$queryExtensions"),
+      headers: {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+        "authorization": "Bearer $bearerToken",
+      },
+    );
+    if (res.statusCode == 200) {
+      return jsonDecode(utf8.decode(res.bodyBytes));
+    }
+    return null;
+  }
+
   Future<void> getHomeFeed() async {
     final String timezone = await FlutterTimezone.getLocalTimezone();
     final Map<String, dynamic> geolocationData = jsonDecode(RegExp(r"({.+})").stringMatch((await http.get(
@@ -152,89 +253,47 @@ class SpotifyProvider with ChangeNotifier {
       print("Timezone: $timezone");
       print("Country: ${geolocationData["country"] ?? "US"}");
     }
-    final queryVariables = Uri.encodeComponent(
-      jsonEncode(
-        {"timeZone": timezone, "sp_t": spotifyToken, "country": geolocationData["country"] ?? "US", "facet": null, "sectionItemsLimit": 10},
-      ),
-    );
-    final queryExtensions = Uri.encodeComponent(
-      jsonEncode(
-        {
-          "persistedQuery": {
-            "version": 1,
-            "sha256Hash": queryHashes["home"],
-          }
-        },
-      ),
-    );
-    // can query the following:
-    // home
-    // homeFeedChips
-    // homeSubfeed
-    // homeSection
-    final res = await http.get(
-      Uri.parse("https://api-partner.spotify.com/pathfinder/v1/query?operationName=home&variables=$queryVariables&extensions=$queryExtensions"),
-      headers: {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
-        "authorization": "Bearer $bearerToken",
-      },
-    );
-    if (res.statusCode == 200) {
-      homeFeedData = jsonDecode(utf8.decode(res.bodyBytes));
-    }
+    homeFeedData = await getDataFromApi("home", {
+          "timeZone": timezone,
+          "sp_t": spotifyToken,
+          "country": geolocationData["country"] ?? "US",
+          "facet": null,
+          "sectionItemsLimit": 10,
+        }) ??
+        {};
   }
 
   Future<Map<String, dynamic>> getPlaylist(String uri) async {
     if (playlistCache[uri] != null) {
       return playlistCache[uri];
     }
-    final queryVariables = Uri.encodeComponent(
-      jsonEncode(
-        {
-          "uri": uri,
-          "offset": 0,
-          "limit": 25,
-        },
-      ),
-    );
-    final queryExtensions = Uri.encodeComponent(
-      jsonEncode(
-        {
-          "persistedQuery": {
-            "version": 1,
-            "sha256Hash": queryHashes["fetchPlaylist"],
-          }
-        },
-      ),
-    );
-    final res = await http.get(
-      Uri.parse("https://api-partner.spotify.com/pathfinder/v1/query?operationName=fetchPlaylist&variables=$queryVariables&extensions=$queryExtensions"),
-      headers: {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
-        "authorization": "Bearer $bearerToken",
+    final res = await getDataFromApi(
+      "fetchPlaylist",
+      {
+        "uri": uri,
+        "offset": 0,
+        "limit": 25,
       },
     );
-    if (res.statusCode != 200) {
+    if (res == null) {
       reload();
       return {};
     }
-
-    var playlistRawData = jsonDecode(utf8.decode(res.bodyBytes));
     var playlistData = {
-      "name": playlistRawData["data"]["playlistV2"]["name"],
-      "description": playlistRawData["data"]["playlistV2"]["description"],
+      "name": res["data"]["playlistV2"]["name"],
+      "description": res["data"]["playlistV2"]["description"],
       "uri": uri,
       "coverImage": {
-        "url": playlistRawData["data"]["playlistV2"]["images"]["items"][0]["sources"][0]["url"],
-        "color": playlistRawData["data"]["playlistV2"]["images"]["items"][0]["extractedColors"]["colorRaw"]["hex"]
+        "url": res["data"]["playlistV2"]["images"]["items"][0]["sources"][0]["url"],
+        "color": res["data"]["playlistV2"]["images"]["items"][0]["extractedColors"]["colorRaw"]["hex"]
       },
       "owner": {
-        "name": playlistRawData["data"]["playlistV2"]["ownerV2"]["data"]["name"],
-        "uri": playlistRawData["data"]["playlistV2"]["ownerV2"]["data"]["uri"],
-        "profilePicture": playlistRawData["data"]["playlistV2"]["ownerV2"]["data"]["avatar"]["sources"][0]["url"]
+        "name": res["data"]["playlistV2"]["ownerV2"]["data"]["name"],
+        "uri": res["data"]["playlistV2"]["ownerV2"]["data"]["uri"],
+        "profilePicture": res["data"]["playlistV2"]["ownerV2"]["data"]["avatar"]["sources"][0]["url"]
       },
-      "tracks": playlistRawData["data"]["playlistV2"]["content"]["items"],
-      "totalTracks": playlistRawData["data"]["playlistV2"]["content"]["totalCount"],
+      "tracks": res["data"]["playlistV2"]["content"]["items"],
+      "totalTracks": res["data"]["playlistV2"]["content"]["totalCount"],
     };
     playlistCache[uri] = playlistData;
 
@@ -245,41 +304,18 @@ class SpotifyProvider with ChangeNotifier {
     if (playlistCache[uri] == null) return false;
     if (playlistCache[uri]["tracks"].length >= playlistCache[uri]["totalTracks"]) return true;
 
-    final queryVariables = Uri.encodeComponent(
-      jsonEncode(
-        {
-          "uri": uri,
-          "offset": playlistCache[uri]["tracks"].length,
-          "limit": 100,
-        },
-      ),
-    );
-    final queryExtensions = Uri.encodeComponent(
-      jsonEncode(
-        {
-          "persistedQuery": {
-            "version": 1,
-            "sha256Hash": queryHashes["fetchPlaylist"],
-          }
-        },
-      ),
-    );
-    final res = await http.get(
-      Uri.parse(
-          "https://api-partner.spotify.com/pathfinder/v1/query?operationName=fetchPlaylistContents&variables=$queryVariables&extensions=$queryExtensions"),
-      headers: {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
-        "authorization": "Bearer $bearerToken",
-      },
-    );
+    final res = await getDataFromApi("fetchPlaylistContents", {
+      "uri": uri,
+      "offset": playlistCache[uri]["tracks"].length,
+      "limit": 100,
+    });
 
-    if (res.statusCode != 200) {
+    if (res == null) {
       reload();
       return false;
     }
 
-    var playlistRawData = jsonDecode(utf8.decode(res.bodyBytes));
-    playlistCache[uri]["tracks"] = [...playlistCache[uri]["tracks"], ...playlistRawData["data"]["playlistV2"]["content"]["items"]];
+    playlistCache[uri]["tracks"] = [...playlistCache[uri]["tracks"], ...res["data"]["playlistV2"]["content"]["items"]];
     return true;
   }
 }
