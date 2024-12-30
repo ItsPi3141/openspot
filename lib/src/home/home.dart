@@ -4,6 +4,8 @@ import 'package:openspot/services/spotify.dart';
 import 'package:openspot/services/youtube.dart';
 import 'package:openspot/src/common/playlist.dart';
 
+NavigatorState? navigator;
+
 class HomePage extends StatefulWidget {
   final SpotifyProvider spotifyProvider;
   final YouTubeProvider youTubeProvider;
@@ -17,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    navigator = Navigator.of(context);
 
     return SafeArea(
       child: Scaffold(

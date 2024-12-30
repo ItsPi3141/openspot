@@ -120,8 +120,9 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
                 return true;
               },
             ),
-            floatingActionButton: const MusicPlayer(),
-            floatingActionButtonLocation: MusicPlayerFabLocation(),
+            // floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+            // floatingActionButton: const MusicPlayer(),
+            // floatingActionButtonLocation: MusicPlayerFabLocation(),
             bottomNavigationBar: NavigationBar(
               destinations: const <NavigationDestination>[
                 NavigationDestination(
@@ -147,6 +148,7 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
               ],
               selectedIndex: selectedIndex,
               onDestinationSelected: (int index) {
+                navigator?.popUntil((route) => !(navigator?.canPop() ?? false));
                 setState(() {
                   selectedIndex = index;
                 });
