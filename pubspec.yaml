@@ -5,12 +5,12 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 0.0.1+1
 
 environment:
-  sdk: 3.3.4
-  flutter: 3.19.6
+  sdk: 3.6.0
+  flutter: 3.27.1
 
 dependencies:
   back_button_interceptor: ^8.0.3
-  cached_network_image: ^3.3.1
+  cached_network_image: ^3.4.1
   dynamic_color: ^1.7.0
   easy_load_more: ^1.1.0
   flutter:
@@ -19,20 +19,20 @@ dependencies:
     git:
       url: https://github.com/ItsPi3141/flutter_js.git
       ref: master
-  flutter_timezone: ^1.0.8
-  http: ^1.2.1
-  just_audio: ^0.9.38
-  just_audio_background: ^0.0.1-beta.13
+  flutter_timezone: ^4.0.0
+  http: ^1.2.2
+  just_audio: ^0.9.42
+  just_audio_background: ^0.0.1-beta.14
   mdi: ^5.0.0-nullsafety.0
-  package_info_plus: ^8.0.0
+  package_info_plus: ^8.1.2
   provider: ^6.1.2
-  url_launcher: ^6.2.6
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true

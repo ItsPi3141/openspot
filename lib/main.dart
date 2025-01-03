@@ -147,7 +147,7 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
           return Scaffold(
             body: Navigator(
               pages: pageStack,
-              onPopPage: (route, result) => route.didPop(result),
+              onDidRemovePage: (route) => route.canPop,
             ),
             bottomSheet: const MusicPlayer(),
             bottomNavigationBar: NavigationBar(

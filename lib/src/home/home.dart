@@ -38,11 +38,11 @@ class _HomePageState extends State<HomePage> {
                 child: SearchAnchor(
                   builder: (BuildContext context, SearchController controller) {
                     return const SearchBar(
-                      padding: MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
-                      elevation: MaterialStatePropertyAll<double>(
+                      padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
+                      elevation: WidgetStatePropertyAll<double>(
                         3.0,
                       ),
-                      shadowColor: MaterialStatePropertyAll<Color>(Colors.transparent),
+                      shadowColor: WidgetStatePropertyAll<Color>(Colors.transparent),
                       leading: Icon(Icons.search),
                       hintText: "Search for a song...",
                     );
