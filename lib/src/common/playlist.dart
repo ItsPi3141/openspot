@@ -198,6 +198,9 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
               itemCount: playlistData["tracks"]?.length ?? 0,
             ),
           ),
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 80),
+          )
         ],
       ),
     );
