@@ -1,3 +1,4 @@
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -87,6 +88,26 @@ class NavigationWrapper extends StatefulWidget {
 
 class _NavigationWrapperState extends State<NavigationWrapper> {
   int selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    BackButtonInterceptor.add(myInterceptor);
+  }
+
+  @override
+  void dispose() {
+    BackButtonInterceptor.remove(myInterceptor);
+    super.dispose();
+  }
+
+  bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
+    if (navigator?.canPop() ?? false) {
+      navigator?.pop();
+      return true;
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
