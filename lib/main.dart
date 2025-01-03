@@ -1,6 +1,7 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:mdi/mdi.dart';
 import 'package:openspot/services/spotify.dart';
@@ -23,6 +24,16 @@ Future<void> main() async {
     androidNotificationClickStartsActivity: true,
     androidResumeOnClick: true,
   );
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+    ),
+  );
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [
+    SystemUiOverlay.top,
+  ]);
   runApp(const App());
 }
 
