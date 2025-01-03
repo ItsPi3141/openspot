@@ -45,6 +45,12 @@ class _AppState extends State<App> {
           builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
             var themeProvider = Provider.of<ThemeProvier>(context);
 
+            const bottomSheetTheme = BottomSheetThemeData(
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              shape: RoundedRectangleBorder(),
+            );
+
             return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: "Openspot",
@@ -53,12 +59,14 @@ class _AppState extends State<App> {
                 colorScheme: themeProvider.useMaterialYou ? lightDynamic ?? _defaultLightColorScheme : _defaultLightColorScheme,
                 splashFactory: InkSparkle.splashFactory,
                 brightness: Brightness.light,
+                bottomSheetTheme: bottomSheetTheme,
               ),
               darkTheme: ThemeData(
                 useMaterial3: true,
                 colorScheme: themeProvider.useMaterialYou ? darkDynamic ?? _defaultDarkColorScheme : _defaultDarkColorScheme,
                 splashFactory: InkSparkle.splashFactory,
                 brightness: Brightness.dark,
+                bottomSheetTheme: bottomSheetTheme,
               ),
               themeMode: themeProvider.currentTheme,
               home: const NavigationWrapper(),
@@ -113,16 +121,9 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
           return Scaffold(
             body: Navigator(
               pages: pageStack,
-              onPopPage: (route, result) {
-                if (!route.didPop(result)) {
-                  return false;
-                }
-                return true;
-              },
+              onPopPage: (route, result) => route.didPop(result),
             ),
-            // floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-            // floatingActionButton: const MusicPlayer(),
-            // floatingActionButtonLocation: MusicPlayerFabLocation(),
+            bottomSheet: const MusicPlayer(),
             bottomNavigationBar: NavigationBar(
               destinations: const <NavigationDestination>[
                 NavigationDestination(
