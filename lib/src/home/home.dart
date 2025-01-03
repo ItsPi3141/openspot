@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:openspot/services/spotify.dart';
 import 'package:openspot/services/youtube.dart';
+import 'package:openspot/src/common/artist.dart';
 import 'package:openspot/src/common/playlist.dart';
 
 NavigatorState? navigator;
@@ -112,10 +113,19 @@ class _HomePageState extends State<HomePage> {
                                                 orElse: () => card["visuals"]["avatarImage"]["sources"][0])?["url"] ??
                                             "";
                                         return Card(
-                                          color: Theme.of(context).colorScheme.surface,
                                           clipBehavior: Clip.antiAlias,
                                           child: InkWell(
-                                            onTap: () {},
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) => ArtistViewer(
+                                                    uri: card["uri"],
+                                                    spotifyProvider: widget.spotifyProvider,
+                                                    youtubeProvider: widget.youTubeProvider,
+                                                  ),
+                                                ),
+                                              );
+                                            },
                                             child: Padding(
                                               padding: const EdgeInsets.all(8.0),
                                               child: Column(
@@ -130,12 +140,12 @@ class _HomePageState extends State<HomePage> {
                                                         errorWidget: (context, url, error) => Icon(
                                                           Icons.person,
                                                           size: 96.0,
-                                                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                                          color: Theme.of(context).textTheme.labelSmall!.color!.withAlpha(127),
                                                         ),
                                                         placeholder: (context, url) => Icon(
                                                           Icons.person,
                                                           size: 96.0,
-                                                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                                          color: Theme.of(context).textTheme.labelSmall!.color!.withAlpha(127),
                                                         ),
                                                       ),
                                                     ),

@@ -19,6 +19,8 @@ class SpotifyProvider with ChangeNotifier {
 
   Map<String, dynamic> playlistCache = {};
 
+  Map<String, dynamic> artistCache = {};
+
   SpotifyProvider() {
     reload();
   }
@@ -317,5 +319,26 @@ class SpotifyProvider with ChangeNotifier {
 
     playlistCache[uri]["tracks"] = [...playlistCache[uri]["tracks"], ...res["data"]["playlistV2"]["content"]["items"]];
     return true;
+  }
+
+  Future<Map<String, dynamic>> getArtist(String uri) async {
+    if (artistCache[uri] != null) {
+      return artistCache[uri];
+    }
+    final res = await getDataFromApi(
+      "queryArtistOverview",
+      {
+        "uri": uri,
+        "locale": "",
+      },
+    );
+    if (res == null) {
+      reload();
+      return {};
+    }
+    final artistData = res["data"]["artistUnion"];
+    artistCache[uri] = artistData;
+
+    return artistData;
   }
 }
