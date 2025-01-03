@@ -11,7 +11,11 @@ environment:
 dependencies:
   back_button_interceptor: ^8.0.3
   cached_network_image: ^3.4.1
-  dynamic_color: ^1.7.0
+  dynamic_color:
+    git:
+      url: https://github.com/hasali19/material-foundation-flutter-packages.git
+      ref: main
+      path: packages/dynamic_color
   easy_load_more: ^1.1.0
   flutter:
     sdk: flutter

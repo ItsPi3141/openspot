@@ -58,7 +58,7 @@ class _ArtistViewerState extends State<ArtistViewer> {
                         imageUrl: artistData["visuals"]?["headerImage"]["sources"][0]["url"] ?? "",
                         fit: BoxFit.cover,
                         alignment: FractionalOffset.center,
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.black.withValues(alpha: 0.5),
                         colorBlendMode: BlendMode.srcATop,
                         width: double.infinity,
                         height: double.infinity,
@@ -79,12 +79,12 @@ class _ArtistViewerState extends State<ArtistViewer> {
                                 errorWidget: (context, url, error) => Icon(
                                   Icons.person,
                                   size: 96.0,
-                                  color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                  color: Theme.of(context).textTheme.labelSmall!.color!.withValues(alpha: 0.5),
                                 ),
                                 placeholder: (context, url) => Icon(
                                   Icons.person,
                                   size: 96.0,
-                                  color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                  color: Theme.of(context).textTheme.labelSmall!.color!.withValues(alpha: 0.5),
                                 ),
                               ),
                             ),

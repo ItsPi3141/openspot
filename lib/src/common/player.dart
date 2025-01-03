@@ -41,7 +41,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
                 tag: "player_background",
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
@@ -53,7 +53,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
                     Hero(
                       tag: "player_albumCover",
                       child: Card.filled(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         shadowColor: Colors.transparent,
                         clipBehavior: Clip.antiAlias,
                         child: CachedNetworkImage(
@@ -63,11 +63,11 @@ class _MusicPlayerState extends State<MusicPlayer> {
                           width: 48,
                           errorWidget: (context, url, error) => Icon(
                             Icons.music_note_rounded,
-                            color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                            color: Theme.of(context).textTheme.labelSmall!.color!.withValues(alpha: 0.5),
                           ),
                           placeholder: (context, url) => Icon(
                             Icons.music_note_rounded,
-                            color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                            color: Theme.of(context).textTheme.labelSmall!.color!.withValues(alpha: 0.5),
                           ),
                         ),
                       ),
@@ -135,7 +135,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
               tag: "player_background",
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.background,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
               ),
             ),

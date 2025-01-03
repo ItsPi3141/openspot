@@ -34,9 +34,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  static final _defaultLightColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
-  static final _defaultDarkColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark);
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -45,6 +42,22 @@ class _AppState extends State<App> {
         return DynamicColorBuilder(
           builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
             var themeProvider = Provider.of<ThemeProvier>(context);
+
+            ColorScheme lightDynamicColorScheme;
+            ColorScheme darkDynamicColorScheme;
+
+            DynamicSchemeVariant variant = DynamicSchemeVariant.rainbow;
+
+            ColorScheme lightColorScheme = ColorScheme.fromSeed(seedColor: Colors.green, dynamicSchemeVariant: variant);
+            ColorScheme darkColorScheme = ColorScheme.fromSeed(seedColor: Colors.green, dynamicSchemeVariant: variant, brightness: Brightness.dark);
+
+            if (lightDynamic != null && darkDynamic != null) {
+              lightDynamicColorScheme = lightDynamic;
+              darkDynamicColorScheme = darkDynamic;
+            } else {
+              lightDynamicColorScheme = lightColorScheme;
+              darkDynamicColorScheme = darkColorScheme;
+            }
 
             const bottomSheetTheme = BottomSheetThemeData(
               backgroundColor: Colors.transparent,
@@ -57,14 +70,14 @@ class _AppState extends State<App> {
               title: "Openspot",
               theme: ThemeData(
                 useMaterial3: true,
-                colorScheme: themeProvider.useMaterialYou ? lightDynamic ?? _defaultLightColorScheme : _defaultLightColorScheme,
+                colorScheme: themeProvider.useMaterialYou ? lightDynamicColorScheme : lightColorScheme,
                 splashFactory: InkSparkle.splashFactory,
                 brightness: Brightness.light,
                 bottomSheetTheme: bottomSheetTheme,
               ),
               darkTheme: ThemeData(
                 useMaterial3: true,
-                colorScheme: themeProvider.useMaterialYou ? darkDynamic ?? _defaultDarkColorScheme : _defaultDarkColorScheme,
+                colorScheme: themeProvider.useMaterialYou ? darkDynamicColorScheme : darkColorScheme,
                 splashFactory: InkSparkle.splashFactory,
                 brightness: Brightness.dark,
                 bottomSheetTheme: bottomSheetTheme,
