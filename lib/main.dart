@@ -102,6 +102,11 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
   }
 
   bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
+    if (isPlayerExpanded) {
+      isPlayerExpanded = false;
+      return false;
+    }
+
     if (navigator?.canPop() ?? false) {
       navigator?.pop();
       return true;

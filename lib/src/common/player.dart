@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:openspot/services/audioplayer.dart';
 
+bool isPlayerExpanded = false;
+
 class MusicPlayer extends StatefulWidget {
   final bool isCompact;
   const MusicPlayer({super.key, this.isCompact = true});
@@ -29,7 +31,10 @@ class _MusicPlayerState extends State<MusicPlayer> {
         width: MediaQuery.of(context).size.width,
         height: compressedHeight,
         child: GestureDetector(
-          onTap: () => Navigator.of(context).push(FullPlayer()),
+          onTap: () {
+            isPlayerExpanded = true;
+            Navigator.of(context).push(FullPlayer());
+          },
           child: Stack(
             children: [
               FadeTransitionHero(
