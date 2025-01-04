@@ -23,7 +23,7 @@ class SettingsPage extends StatelessWidget {
               pinned: true,
               snap: true,
               floating: true,
-              expandedHeight: 112,
+              expandedHeight: 72,
               flexibleSpace: FlexibleSpaceBar(
                 title: Text(
                   "Settings",
