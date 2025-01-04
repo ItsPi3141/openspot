@@ -58,7 +58,7 @@ class _ArtistViewerState extends State<ArtistViewer> {
                         imageUrl: artistData["visuals"]?["headerImage"]["sources"][0]["url"] ?? "",
                         fit: BoxFit.cover,
                         alignment: FractionalOffset.center,
-                        color: Colors.black.withValues(alpha: 0.5),
+                        color: Theme.of(context).colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
                         colorBlendMode: BlendMode.srcATop,
                         width: double.infinity,
                         height: double.infinity,
