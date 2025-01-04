@@ -21,11 +21,16 @@ class SpotifyProvider with ChangeNotifier {
 
   Map<String, dynamic> artistCache = {};
 
+  List browsableGenresCache = [];
+
   SpotifyProvider() {
     reload();
   }
 
+  int reloadCount = 0;
   void reload() async {
+    if (reloadCount > 2) return;
+    reloadCount++;
     await getTokens();
     await getHomeFeed();
     notifyListeners();
@@ -71,6 +76,22 @@ class SpotifyProvider with ChangeNotifier {
       }
     } else {
       return;
+    }
+
+    // get query hashes for search operations
+    final searchRouteJsHash = RegExp(r'(\d+):"xpui-routes-search".*\1:"(?<hash>[a-z0-9]+)"').firstMatch(spotifyWebPlayer.body)?.namedGroup("hash");
+    final searchRouteJs = await http.get(
+      Uri.parse("https://open-exp.spotifycdn.com/cdn/build/web-player/xpui-routes-search.$searchRouteJsHash.js"),
+    );
+    if (searchRouteJs.statusCode == 200) {
+      final queries = RegExp(r'(?<="(?<name>.+?)","query",")(?<hash>.+?)(?=")').allMatches(searchRouteJs.body);
+      for (final query in queries) {
+        if (query.namedGroup("name") == null || query.namedGroup("hash") == null) return;
+        queryHashes[query.namedGroup("name")!] = query.namedGroup("hash")!;
+        if (kDebugMode) {
+          print("Spotify ${query.namedGroup("name")!} query hash: ${query.namedGroup("hash")!}");
+        }
+      }
     }
 
     // get additional query hashes
@@ -340,5 +361,43 @@ class SpotifyProvider with ChangeNotifier {
     artistCache[uri] = artistData;
 
     return artistData;
+  }
+
+  Future<List<dynamic>> getBrowsableGenres() async {
+    if (browsableGenresCache.isNotEmpty) return browsableGenresCache;
+
+    final res = await getDataFromApi(
+      "browseAll",
+      {
+        "pagePagination": {"offset": 0, "limit": 10},
+        "sectionPagination": {"offset": 0, "limit": 99}
+      },
+    );
+    if (res == null) {
+      // reload();
+      return [];
+    }
+    final genres = res["data"]["browseStart"]["sections"]["items"][0]["sectionItems"]["items"] as List;
+    genres.removeWhere((e) {
+      if ((e["uri"] as String).contains("xlink")) {
+        return true;
+      }
+      final String name = e["content"]["data"]["data"]["cardRepresentation"]["title"]["transformedLabel"];
+      // general word-based filter
+      if (name.contains(RegExp(r'(audiobook|podcast|education|document|comed|fiction|literature|talk)', caseSensitive: false))) {
+        return true;
+      }
+      // custom filter
+      if ([
+        "mystery & thriller",
+        "rooted in black history (old)",
+        "thoughts that count",
+      ].contains(name.toLowerCase())) {
+        return true;
+      }
+      return false;
+    });
+    browsableGenresCache = genres;
+    return genres;
   }
 }
