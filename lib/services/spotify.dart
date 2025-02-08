@@ -296,6 +296,7 @@ class SpotifyProvider with ChangeNotifier {
         "uri": uri,
         "offset": 0,
         "limit": 25,
+        "enableWatchFeedEntrypoint": false,
       },
     );
     if (res == null) {

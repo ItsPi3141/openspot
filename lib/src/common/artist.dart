@@ -55,7 +55,7 @@ class _ArtistViewerState extends State<ArtistViewer> {
                   background: Stack(
                     children: [
                       CachedNetworkImage(
-                        imageUrl: artistData["visuals"]?["headerImage"]["sources"][0]["url"] ?? "",
+                        imageUrl: artistData["headerImage"]?["data"]["sources"][0]["url"] ?? "",
                         fit: BoxFit.cover,
                         alignment: FractionalOffset.center,
                         color: Theme.of(context).colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
