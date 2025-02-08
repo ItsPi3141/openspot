@@ -147,7 +147,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
                   Hero(
                     tag: "player_albumCover",
                     child: Card.filled(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withAlpha(25),
                       shadowColor: Colors.transparent,
                       clipBehavior: Clip.antiAlias,
                       child: CachedNetworkImage(
@@ -157,11 +157,11 @@ class _MusicPlayerState extends State<MusicPlayer> {
                         width: 256,
                         errorWidget: (context, url, error) => Icon(
                           Icons.music_note_rounded,
-                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                          color: Theme.of(context).textTheme.labelSmall!.color!.withAlpha(127),
                         ),
                         placeholder: (context, url) => Icon(
                           Icons.music_note_rounded,
-                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                          color: Theme.of(context).textTheme.labelSmall!.color!.withAlpha(127),
                         ),
                       ),
                     ),
@@ -256,7 +256,7 @@ class FullPlayer extends PageRoute<void> {
   bool get barrierDismissible => false;
 
   @override
-  Color get barrierColor => Colors.black.withOpacity(0.01);
+  Color get barrierColor => Colors.black.withAlpha(3);
 
   @override
   String get barrierLabel => "";

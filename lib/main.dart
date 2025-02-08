@@ -155,15 +155,7 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
             MaterialPage(
               child: IndexedStack(
                 index: selectedIndex,
-                children: [
-                  HomePage(
-                    spotifyProvider: Provider.of<SpotifyProvider>(context),
-                    youTubeProvider: Provider.of<YouTubeProvider>(context),
-                  ),
-                  const DiscoverPage(),
-                  const LibraryPage(),
-                  const SettingsPage()
-                ],
+                children: const [HomePage(), DiscoverPage(), LibraryPage(), SettingsPage()],
               ),
             ),
           ];

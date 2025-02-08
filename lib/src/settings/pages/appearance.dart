@@ -28,11 +28,8 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 "Appearance",
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.onBackground),
               ),
-              titlePadding:
-                  const EdgeInsetsDirectional.only(start: 16.0, bottom: 16.0),
+              titlePadding: const EdgeInsetsDirectional.only(start: 16.0, bottom: 16.0),
             ),
           ),
           SliverList(
@@ -90,17 +87,14 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
                             return SwitchListTile(
                               value: settingsItem["value"] as bool,
                               onChanged: (enabled) {
-                                (settingsItem["onClick"] as void Function(
-                                    bool))(enabled);
+                                (settingsItem["onClick"] as void Function(bool))(enabled);
                               },
                               title: DynamicColorText(
                                 settingsItem["title"] as String,
                                 style: theme.textTheme.titleLarge,
                               ),
-                              subtitle: DynamicColorText(
-                                  settingsItem["description"] as String),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 0.0, horizontal: 16.0),
+                              subtitle: DynamicColorText(settingsItem["description"] as String),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
                             );
                           }
                         case "radio":
@@ -115,11 +109,9 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
                                     style: theme.textTheme.titleLarge,
                                   ),
                                 ),
-                                ...(settingsItem["options"] as List)
-                                    .map((option) {
+                                ...(settingsItem["options"] as List).map((option) {
                                   return RadioListTile(
-                                    title: DynamicColorText(
-                                        option["title"] as String),
+                                    title: DynamicColorText(option["title"] as String),
                                     value: option["value"],
                                     groupValue: themeProvider.currentTheme,
                                     onChanged: (_) {

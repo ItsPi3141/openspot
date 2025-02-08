@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:openspot/services/spotify.dart';
 import 'package:openspot/services/youtube.dart';
-import 'package:openspot/src/common/song.dart';
+import 'package:openspot/src/common/cards.dart';
 import 'package:openspot/src/utils/numbers.dart';
 
 class ArtistViewer extends StatefulWidget {
@@ -136,7 +136,7 @@ class _ArtistViewerState extends State<ArtistViewer> {
                   physics: const NeverScrollableScrollPhysics(),
                   children: ((artistData["discography"]?["topTracks"]["items"] ?? []) as List).map((track) {
                     final t = track["track"];
-                    return Song(
+                    return SongListItem(
                       title: t?["name"],
                       artist: ((t?["artists"]?["items"] ?? []) as List).map((e) => e["profile"]?["name"] ?? "").join(", "),
                       coverImage: t?["albumOfTrack"]?["coverArt"]?["sources"]?[0]?["url"] ?? "",

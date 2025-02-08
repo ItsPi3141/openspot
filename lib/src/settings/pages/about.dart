@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mdi/mdi.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -25,11 +26,8 @@ class _AboutScreenState extends State<AboutScreen> {
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 "About",
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.onBackground),
               ),
-              titlePadding:
-                  const EdgeInsetsDirectional.only(start: 16.0, bottom: 16.0),
+              titlePadding: const EdgeInsetsDirectional.only(start: 16.0, bottom: 16.0),
             ),
           ),
           SliverList(
@@ -48,8 +46,7 @@ class _AboutScreenState extends State<AboutScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 CircleAvatar(
-                                  backgroundColor:
-                                      theme.colorScheme.surfaceVariant,
+                                  backgroundColor: theme.colorScheme.surfaceContainerLow,
                                   radius: 32,
                                 ),
                                 const SizedBox(height: 8),
@@ -58,15 +55,12 @@ class _AboutScreenState extends State<AboutScreen> {
                                   style: theme.textTheme.headlineMedium,
                                 ),
                                 const SizedBox(height: 8),
-                                Text(
-                                    "v${snapshot.data?.version ?? ""} (${snapshot.data?.buildNumber ?? ""})"),
+                                Text("v${snapshot.data?.version ?? ""} (${snapshot.data?.buildNumber ?? ""})"),
                                 const SizedBox(height: 8),
                                 FilledButton.tonalIcon(
                                     onPressed: () {
-                                      final Uri url = Uri.parse(
-                                          'https://github.com/ItsPi3141/OpenSpot');
-                                      launchUrl(url,
-                                          mode: LaunchMode.externalApplication);
+                                      final Uri url = Uri.parse('https://github.com/ItsPi3141/OpenSpot');
+                                      launchUrl(url, mode: LaunchMode.externalApplication);
                                     },
                                     icon: const Icon(Mdi.github),
                                     label: const Text("GitHub")),
@@ -75,20 +69,35 @@ class _AboutScreenState extends State<AboutScreen> {
                             const Divider(
                               height: 32,
                             ),
-                            ListTile(
-                              onTap: () {},
-                              leading: CircleAvatar(
-                                backgroundColor:
-                                    theme.colorScheme.surfaceVariant,
-                                radius: 32,
+                            ...[
+                              {
+                                "name": "ItsPi3141",
+                                "link": "https://github.com/ItsPi3141",
+                                "picture": "https://avatars.githubusercontent.com/u/90981829",
+                                "title": "Main developer",
+                              }
+                            ].map(
+                              (c) => ListTile(
+                                onTap: () {
+                                  final Uri url = Uri.parse(c["link"]!);
+                                  launchUrl(url, mode: LaunchMode.externalNonBrowserApplication);
+                                },
+                                leading: Container(
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: theme.colorScheme.surfaceContainerLow,
+                                  ),
+                                  child: CachedNetworkImage(
+                                    width: 64,
+                                    height: 64,
+                                    imageUrl: c["picture"]!,
+                                  ),
+                                ),
+                                title: Text(c["name"]!, style: theme.textTheme.titleLarge),
+                                subtitle: Text(c["title"]!),
+                                contentPadding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
                               ),
-                              title: Text("ItsPi3141",
-                                  style: theme.textTheme.titleLarge),
-                              subtitle: const Text(
-                                "Main developer",
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 4.0, horizontal: 12.0),
                             )
                           ],
                         );

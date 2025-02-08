@@ -3,7 +3,7 @@ import 'package:easy_load_more/easy_load_more.dart';
 import 'package:flutter/material.dart';
 import 'package:openspot/services/spotify.dart';
 import 'package:openspot/services/youtube.dart';
-import 'package:openspot/src/common/song.dart';
+import 'package:openspot/src/common/cards.dart';
 
 class PlaylistViewer extends StatefulWidget {
   final String uri;
@@ -65,12 +65,12 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                             errorWidget: (context, url, error) => Icon(
                               Icons.album,
                               size: 96.0,
-                              color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                              color: Theme.of(context).textTheme.labelSmall!.color!.withAlpha(127),
                             ),
                             placeholder: (context, url) => Icon(
                               Icons.album,
                               size: 96.0,
-                              color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                              color: Theme.of(context).textTheme.labelSmall!.color!.withAlpha(127),
                             ),
                           ),
                         ),
@@ -101,11 +101,11 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
                                         width: 24,
                                         errorWidget: (context, url, error) => Icon(
                                           Icons.person,
-                                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                          color: Theme.of(context).textTheme.labelSmall!.color!.withAlpha(127),
                                         ),
                                         placeholder: (context, url) => Icon(
                                           Icons.person,
-                                          color: Color(Theme.of(context).textTheme.labelSmall!.color!.value).withOpacity(0.5),
+                                          color: Theme.of(context).textTheme.labelSmall!.color!.withAlpha(127),
                                         ),
                                       ),
                                     ),
@@ -136,7 +136,7 @@ class _PlaylistViewerState extends State<PlaylistViewer> {
             loadingWidgetColor: theme.colorScheme.primary,
             child: SliverList.separated(
               itemBuilder: (BuildContext context, int index) {
-                return Song(
+                return SongListItem(
                   title: playlistData["tracks"][index]?["itemV2"]?["data"]?["name"] ?? "",
                   artist: (playlistData["tracks"][index]?["itemV2"]?["data"]?["artists"]?["items"] as List).map((e) => e["profile"]?["name"] ?? "").join(", "),
                   coverImage: (playlistData["tracks"]?[index]?["itemV2"]?["data"]?["albumOfTrack"]?["coverArt"]?["sources"] as List).firstWhere(
